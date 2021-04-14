@@ -1,0 +1,39 @@
+{
+  "name": "subsvue",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "watch": "npm-watch",
+    "view": "chromium --new-window dist/index.html",
+    "refresh": "xdotool windowactivate --sync $(xdotool search -name \"subsvue - Chromium\") key F5"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "subtitles-parser": "0.0.2",
+    "vue": "^2.6.12",
+    "vue-mutation-observer": "^0.1.2",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "css-loader": "^5.2.1",
+    "html-webpack-plugin": "^5.3.1",
+    "npm-watch": "^0.9.0",
+    "style-loader": "^2.0.0",
+    "vue-loader": "^15.9.6",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^5.31.2",
+    "webpack-cli": "^4.6.0"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "vue,js"
+    }
+  }
+}
