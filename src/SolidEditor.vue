@@ -1,11 +1,12 @@
 <template>
-<div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true" >
-  <SolidEditorSubtitle v-for="(sub, uniq) in subtitles" :subtitle="sub" :uniq="uniq" :text="sub.text"/>
+<div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true">
+  <SolidEditorSubtitle v-for="(sub, uniq, index) in subtitles" :subtitle="sub" :uniq="uniq" :index="index" :text="sub.text" />
 </div>
 </template>
 
 <script>
-import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"//
+import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
+
 export default {
   name: "SolidEditor",
   components: {
@@ -40,6 +41,7 @@ export default {
       //   text: this.$store.state.currentSubtitle.innerHTML
       // })
     },
+
     findSelectedTitle(event) {
       // get currently focused html in the editor to figure out which subtitle we are working on
       var selectedElement = null;
@@ -76,15 +78,28 @@ export default {
     document.addEventListener('selectionchange', this.findSelectedTitle.bind(this));
     console.log(this)
   },
+  updated() { //
+    console.log("render")
+  },
   mounted() {
     this.$store.commit("setEditorElement", this.$el)
 
     // Prevent pasting html into the editor. Otherwise subtitle markup gets pasted.
     this.$el.addEventListener("paste", function(e) {
-        e.preventDefault();
-        var text = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand("insertHTML", false, text);
+      e.preventDefault();
+      var text = (e.originalEvent || e).clipboardData.getData('text/plain');
+      document.execCommand("insertHTML", false, text);
     });
+
+    this.$el.addEventListener("keypress", function keypress(event) {
+      if (event.keyCode == 13) {
+        event.preventDefault()
+        // insert 2 br tags (if only one br tag is inserted the cursor won't go to the second line)
+        document.execCommand('insertHTML', false, '<br>');
+        // prevent the default behaviour of return key pressed
+        return false;
+      }
+    }, )
 
 
   },
@@ -102,9 +117,11 @@ export default {
 <style scoped>
 div {
   display: inline-block;
+  position:relative;
   width: 600px;
   height: 400px;
   background: lightgray;
   overflow: scroll;
+  /* will-change: contents; */
 }
 </style>

@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import _ from 'lodash'
 import {
   uniqueID
 } from './misc.js'
@@ -31,6 +32,8 @@ const getters = {
 const actions = {
 
 };
+
+var timeout = true;
 
 const mutations = {
   loadProject(state, data) {
@@ -67,7 +70,13 @@ const mutations = {
     Vue.set(state.projectData, uniq, subtitleData)
   },
   updateSubtitle(store, data) {
-    Vue.set(data.obj, "text", data.text)
+    if (timeout) {
+      Vue.set(data.obj, "text", data.text)
+      timeout = false;
+      setTimeout(function () {
+        timeout = true;
+      }, 100);
+    }
   }
 
 };
