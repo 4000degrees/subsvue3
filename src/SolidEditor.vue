@@ -1,11 +1,11 @@
 <template>
-<div id="SolidEditor" v-observer:childList="onChildListChange" contenteditable="true" @input="input($event)">
+<div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true" >
   <SolidEditorSubtitle v-for="(sub, uniq) in subtitles" :subtitle="sub" :uniq="uniq" :text="sub.text"/>
 </div>
 </template>
 
 <script>
-import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
+import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"//
 export default {
   name: "SolidEditor",
   components: {
@@ -32,12 +32,13 @@ export default {
   },
   methods: {
     input(event) {
-      this.$store.commit("updateSubtitleText", {
-        // since the subtitle itself doesn't have
-        // input events and thus can't put new text into model, the editor has to handle this
-        id: this.$store.state.currentSubtitle.id,
-        text: this.$store.state.currentSubtitle.innerHTML
-      })
+      // this.$store.commit("updateSubtitleText", {
+      //   // first way to detect input on child
+      //   // since the subtitle itself doesn't have
+      //   // input events and thus can't put new text into model, the editor has to handle this
+      //   id: this.$store.state.currentSubtitle.id,
+      //   text: this.$store.state.currentSubtitle.innerHTML
+      // })
     },
     findSelectedTitle(event) {
       // get currently focused html in the editor to figure out which subtitle we are working on
@@ -64,18 +65,16 @@ export default {
     onChildListChange(mutationsList, observer) {
       // Watch deletions of subtitles in the editor to delete them in the model
 
-
       for (const mutation of mutationsList) {
-        // console.log(mutation)
         if (mutation.removedNodes[0]) {
           this.$store.commit("deleteSubtitle", mutation.removedNodes[0].id)
-
         }
       }
     }
   },
   created() {
     document.addEventListener('selectionchange', this.findSelectedTitle.bind(this));
+    console.log(this)
   },
   mounted() {
     this.$store.commit("setEditorElement", this.$el)

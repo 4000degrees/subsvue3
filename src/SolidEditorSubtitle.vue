@@ -1,6 +1,5 @@
 <template>
-<span contenteditable="true" class="title" :class="uniq" :id="uniq">
-</span>
+<span v-observer:subtree.characterData="onCharacterDataChange" class="title" :class="uniq" :id="uniq"></span>
 </template>
 
 <script>
@@ -13,11 +12,10 @@ export default {
   props: {
     subtitle: "",
     uniq: "",
-    text: ""
+    text: "",
   },
   data() {
-    return {
-    };
+    return {};
   },
   mounted() {
     this.$store.commit("setSubtitleElement", {
@@ -25,34 +23,48 @@ export default {
       el: this.$el
     })
     this.$el.innerHTML = this.text + ' '
+
+    // 2nd way to detect input on child of contenteditable
+    // this.$parent.$el.addEventListener("input", function(event) {
+    //   var selectedElement = window.getSelection().focusNode;
+    //   if (this.$el.contains(selectedElement)) {
+    //     while (selectedElement !== this.$el) {
+    //       selectedElement = selectedElement.parentNode;
+    //     }
+    //     console.log(selectedElement)
+    //     this.$store.commit("updateSubtitle", {
+    //       obj: this.subtitle,
+    //       text: selectedElement.innerHTML
+    //     })
+    //   }
+    // }.bind(this))
   },
-  created() {},
+  created() {
+  },
   watch: {
     text(newValue, oldValue) {
       if (!this.editorFocused) {
         this.$el.innerHTML = newValue
-      } else {
-        newValue = convertHTMLEntities(newValue)
       }
     }
   },
   computed: {
-
     editorFocused: {
       cache: false,
       get() {
-        var editorFocused = false;
-
-        if (this.$store.state.editorElement != null) {
-          editorFocused = this.$store.state.editorElement.contains(window.getSelection().focusNode)
-        }
-        return editorFocused;
+        return this.$parent.$el.contains(window.getSelection().focusNode);
       }
     },
-
   },
   methods: {
-
+    // third way to detect input
+    // v-observer:subtree.characterData="onCharacterDataChange"
+    onCharacterDataChange(mutationsList) {
+        this.$store.commit("updateSubtitle", {
+          obj: this.subtitle,
+          text: this.$el.innerHTML
+        })
+    }
   }
 }
 </script>
