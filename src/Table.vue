@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     subtitles() {
-      return this.$store.state.projectData
+      return this.$store.getters.subtitles
     },
   }
 }

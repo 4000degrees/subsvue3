@@ -25,14 +25,9 @@ export default {
     FileInput
   },
   props: [],
-  created() {
-    var f = this.$store.state.projectData[Object.keys(this.$store.state.projectData)[0]]
-    var vel = document.getElementById(f)
-    this.$store.commit("setCurrentSubtitle", {id: Object.keys(this.$store.state.projectData)[0]})
-  },
+  created() {},
   data() {
-    return {
-    };
+    return {};
   }
 }
 </script>

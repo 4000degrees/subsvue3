@@ -1,5 +1,5 @@
 <template>
-<span v-observer:subtree.characterData.childList="mutationObserver" :class="uniq" :id="uniq"></span>
+<span v-observer:subtree.characterData.childList="mutationObserver"></span>
 </template>
 
 <script>
@@ -9,13 +9,11 @@ import {
 export default {
   name: "SolidEditorSubtitle",
   components: {},
-  props: {
-    subtitle: "",
-    uniq: "",
-    text: "",
-  },
+  props: ["subtitle"],
   data() {
-    return {};
+    return {
+      drop: false
+    };
   },
   mounted() {
     this.$store.commit("setSubtitleElement", {
@@ -24,6 +22,15 @@ export default {
     })
     this.$el.innerHTML = this.text + ' '
     document.addEventListener('selectionchange', this.onSelectionChange);
+
+    // prevent inserting subtitle spans markup when drag n dropping
+    this.$el.addEventListener("dragstart", (ev) => {
+      var sanitizedData, draggedData;
+      draggedData = ev.dataTransfer.getData("text/html")
+      sanitizedData = draggedData.replace(/<\/?(\s+)?span([^>]+)?>/gim,"")
+      ev.dataTransfer.clearData("text/html")
+      ev.dataTransfer.setData("text/html", sanitizedData)
+    })
   },
   created() {},
   updated() {},
@@ -34,10 +41,15 @@ export default {
       }
     },
     selected(newValue) {
+      if (!this.$el.parentNode) {
+        return
+      }
       if (newValue == true) {
         this.$el.classList.add("focus")
-        let offsetTop = this.$el.offsetTop - (this.$el.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
-        this.$el.parentNode.scrollTop = offsetTop
+        if (!this.editorFocused) {
+          let offsetTop = this.$el.offsetTop - (this.$el.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
+          this.$el.parentNode.scrollTop = offsetTop
+        }
       } else {
         this.$el.classList.remove("focus")
       }
@@ -52,17 +64,24 @@ export default {
     },
     selected() {
       return this.$store.state.currentSubtitle === this.subtitle
-
+    },
+    text: {
+      get() {
+        return this.subtitle.text
+      },
+      set(text) {
+        this.$store.commit("updateSubtitle", {
+          obj: this.subtitle,
+          text: text
+        })
+      }
     }
   },
   methods: {
     // third way to detect input
     // v-observer:subtree.characterData="onCharacterDataChange"
     mutationObserver(mutationsList) {
-      this.$store.commit("updateSubtitle", {
-        obj: this.subtitle,
-        text: this.$el.innerHTML
-      })
+      this.text = this.$el.innerHTML
     },
     onSelectionChange() {
       if (this.$el.contains(window.getSelection().focusNode)) {

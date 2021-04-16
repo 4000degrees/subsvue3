@@ -1,6 +1,6 @@
 <template>
 <div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true">
-  <SolidEditorSubtitle v-for="(subtitle, uniq, index) in subtitles" :subtitle="subtitle" :uniq="uniq" :index="index" :text="subtitle.text" />
+  <SolidEditorSubtitle v-for="(subtitle, index) in subtitles" :subtitle="subtitle"/>
 </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
   },
   computed: {
     subtitles() {
-      return this.$store.state.projectData
+      return this.$store.getters.evenDeletedSubtitles
     },
     currentSubtitle() {
       return this.$store.state.currentSubtitle
@@ -30,8 +30,10 @@ export default {
     onChildListChange(mutationsList, observer) {
       // Watch deletions of subtitles in the editor to delete them in the model
       for (const mutation of mutationsList) {
-        if (mutation.removedNodes[0]) {
-          this.$store.commit("deleteSubtitle", mutation.removedNodes[0].id)
+        if (mutation.removedNodes[0] && mutation.removedNodes[0].__vue__) {
+          this.$store.commit("deleteSubtitle", mutation.removedNodes[0].__vue__.subtitle)
+        } else if (mutation.addedNodes[0] && mutation.addedNodes[0].__vue__) {
+          this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].__vue__.subtitle)
         }
       }
     }

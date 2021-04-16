@@ -14,11 +14,6 @@ window['store'] = store
 var sd = sampleData()
 parser(sd.data, sd.format)
 
-window['qqq'] = function(qwe) {
-  console.log(qwe);
-}
-// store.commit('loadProject', sampleData())
-
 var app = new Vue({
   el: '#app',
   template: '<App />',
