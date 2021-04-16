@@ -17,7 +17,7 @@ const state = {
 
 const getters = {
   currentSubtitleText(state) {
-    return state.projectData[state.currentSubtitle.id].text
+    return state.currentSubtitle.text || ""
   },
   // getSubtitles(state) {
   //   Object.fromEntries(Object.entries(state.projectData).
@@ -38,12 +38,6 @@ var timeout = true;
 const mutations = {
   loadProject(state, data) {
     state.projectData = data
-  },
-  updateCurrentSubtitleText(state, data) {
-    state.projectData[state.currentSubtitle.id].text = state.currentSubtitle.innerHTML
-  },
-  updateSubtitleText(state, data) {
-    state.projectData[data.id].text = data.text
   },
   setCurrentSubtitle(state, subtitle) {
     state.currentSubtitle = subtitle

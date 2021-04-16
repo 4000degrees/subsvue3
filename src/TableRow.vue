@@ -1,27 +1,40 @@
 <template>
-  <tr>
-    <td>{{uniq}}</td>
-    <td>{{start}}</td>
-    <td>{{end}}</td>
-    <td>{{subtitle.text}}</td>
-  </tr>
+<tr @click="onClick()">
+  <td>{{start}}</td>
+  <td>{{end}}</td>
+  <td v-html="subtitle.text"></td>
+</tr>
 </template>
 
 <script>
-import {ms2time} from './misc.js'
+import {
+  ms2time
+} from './misc.js'
 export default {
   name: "TableRow",
-  components: {
-  },
+  components: {},
   props: {
     subtitle: "",
-    uniq:""
+    uniq: ""
   },
-  created() {
-  },
+  created() {},
   data() {
     return {
     };
+  },
+  watch: {
+    selected(newValue) {
+      if (newValue == true) {
+        this.$el.classList.add("focus")
+      } else {
+        this.$el.classList.remove("focus")
+      }
+    }
+  },
+  methods: {
+    onClick(event) {
+      this.$store.commit("setCurrentSubtitle", this.subtitle)
+    }
   },
   computed: {
     start() {
@@ -30,8 +43,19 @@ export default {
     end() {
       return ms2time(this.subtitle.end)
     },
+    selected() {
+      return this.$store.state.currentSubtitle === this.subtitle
+    }
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+tr:hover {
+  background: lightgrey;
+}
+
+tr.focus {
+  background: lightpink;
+}
+</style>

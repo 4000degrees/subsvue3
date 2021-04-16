@@ -2,7 +2,6 @@
   <table>
   <thead>
     <tr>
-      <th>ID</th>
       <th>Start</th>
       <th>End</th>
       <th>Text</th>
@@ -37,4 +36,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+table {
+  height: 500px;
+  display: block;
+  overflow: scroll;
+}
+</style>
