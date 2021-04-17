@@ -1,5 +1,3 @@
-
-
 <template>
 <div>
   <textarea rows="8" cols="80" v-model="text"></textarea>

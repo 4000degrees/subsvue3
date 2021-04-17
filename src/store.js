@@ -8,7 +8,6 @@ const state = {
   currentSubtitle: null,
   projectOpened: false,
   settings: {},
-  editorElement: null
 }
 
 const getters = {
@@ -39,9 +38,6 @@ const mutations = {
   },
   setSubtitleElement(state, data) {
     data.obj.el = data.el
-  },
-  setEditorElement(state, el) {
-    state.editorElement = el
   },
   deleteSubtitle(state, subtitle) {
     Vue.set(subtitle, "deleted", true)

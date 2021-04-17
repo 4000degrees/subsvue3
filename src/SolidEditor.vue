@@ -1,6 +1,7 @@
 <template>
 <div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true">
-  <SolidEditorSubtitle v-for="(subtitle, index) in subtitles" :subtitle="subtitle"/>
+  <SolidEditorSubtitle v-for="(subtitle, index) in subtitles" v-bind:key="index" :subtitle="subtitle" />
+  <span>Ooijosifjosidjf</span>
 </div>
 </template>
 
@@ -27,7 +28,7 @@ export default {
     }
   },
   methods: {
-    onChildListChange(mutationsList, observer) {
+    onChildListChange(mutationsList) {
       // Watch deletions of subtitles in the editor to delete them in the model
       for (const mutation of mutationsList) {
         if (mutation.removedNodes[0] && mutation.removedNodes[0].__vue__) {
@@ -41,7 +42,6 @@ export default {
   created() {},
   updated() {},
   mounted() {
-    this.$store.commit("setEditorElement", this.$el)
 
     // Prevent pasting html into the editor. Otherwise subtitle markup gets pasted.
     this.$el.addEventListener("paste", function(e) {
@@ -54,10 +54,18 @@ export default {
     this.$el.addEventListener("keypress", function keypress(event) {
       if (event.keyCode == 13) {
         event.preventDefault()
-        document.execCommand('insertHTML', false, '<br>');
+        // if (window.getSelection().focusNode.parentElement === this.$el.lastChild) {
+          // window.getSelection().focusNode.parentElement.appendChild(document.createElement("br"))
+        // } else {
+          if (window.getSelection().focusOffset == window.getSelection().focusNode.length || window.getSelection().focusNode.nodeType != 3) {
+            document.execCommand('insertHTML', false, '<br><br>');
+          } else {
+            document.execCommand('insertHTML', false, '<br>');
+          }
+        // }
         return false;
       }
-    }, )
+    }.bind(this))
 
   },
   watch: {}
@@ -72,6 +80,8 @@ div {
   height: 400px;
   background: lightgray;
   overflow: scroll;
+  padding: 5px;
   /* will-change: contents; */
+  white-space: pre;
 }
 </style>

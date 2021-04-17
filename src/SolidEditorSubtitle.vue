@@ -20,7 +20,7 @@ export default {
       obj: this.subtitle,
       el: this.$el
     })
-    this.$el.innerHTML = this.text + ' '
+    this.$el.innerHTML = ' ' + this.text
     document.addEventListener('selectionchange', this.onSelectionChange);
 
     // prevent inserting subtitle spans markup when drag n dropping
@@ -35,7 +35,7 @@ export default {
   created() {},
   updated() {},
   watch: {
-    text(newValue, oldValue) {
+    text(newValue) {
       if (!this.editorFocused) {
         this.$el.innerHTML = newValue
       }
@@ -80,7 +80,7 @@ export default {
   methods: {
     // third way to detect input
     // v-observer:subtree.characterData="onCharacterDataChange"
-    mutationObserver(mutationsList) {
+    mutationObserver() {
       this.text = this.$el.innerHTML
     },
     onSelectionChange() {
@@ -97,12 +97,13 @@ export default {
 
 <style scoped>
 span {
-  /* white-space: pre-line; */
-}
+  /* white-space: pre; */
 
+}
 /* span:nth-child(50n) {
   display:block;
 } */
+
 span:hover {
   background-color: gray;
 }
@@ -111,8 +112,12 @@ span.focus {
   background-color: lightpink;
 }
 
-span:after {
-  /* content: " "; */
+/* span:before {
+  content: " ";
   white-space: pre;
 }
+span:after {
+  content: " ";
+  white-space: pre;
+} */
 </style>

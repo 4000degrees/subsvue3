@@ -4,7 +4,7 @@
 <div id="app">
   <FileInput />
   <SolidEditor />
-  <SingleSubtitleEditor />
+  <SingleSubtitleCE />
   <Table />
 </div>
 </template>
@@ -13,6 +13,7 @@
 import Counter from "./Counter.vue";
 import SolidEditor from "./SolidEditor.vue";
 import SingleSubtitleEditor from "./SingleSubtitleEditor.vue";
+import SingleSubtitleCE from "./SingleSubtitleCE.vue";
 import Table from "./Table.vue";
 import FileInput from "./FileInput.vue";
 export default {
@@ -21,11 +22,14 @@ export default {
     Counter,
     SolidEditor,
     SingleSubtitleEditor,
+    SingleSubtitleCE,
     Table,
     FileInput
   },
   props: [],
-  created() {},
+  mounted() {
+    this.$store.commit("setCurrentSubtitle", this.$store.state.subtitles[0])
+  },
   data() {
     return {};
   }
