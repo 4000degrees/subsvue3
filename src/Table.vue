@@ -1,5 +1,5 @@
 <template>
-  <table>
+<table tabindex="0">
   <thead>
     <tr>
       <th>Start</th>
@@ -8,9 +8,9 @@
     </tr>
   </thead>
   <tbody>
-    <TableRow v-for="(subtitle, uniq) in subtitles" :subtitle="subtitle" :uniq="uniq"/>
+    <TableRow v-for="(subtitle, uniq) in subtitles" :subtitle="subtitle" :uniq="uniq" />
   </tbody>
-  </table>
+</table>
 </template>
 
 <script>
@@ -20,13 +20,10 @@ export default {
   components: {
     TableRow
   },
-  props: {
-  },
-  created() {
-  },
+  props: {},
+  created() {},
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
     subtitles() {
@@ -38,8 +35,9 @@ export default {
 
 <style scoped>
 table {
-  height: 500px;
+  width: 100%;
+  height: 100%;
   display: block;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 </style>

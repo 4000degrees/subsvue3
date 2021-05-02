@@ -1,12 +1,14 @@
 <template>
 <div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true">
-  <SolidEditorSubtitle v-for="(subtitle, index) in subtitles" v-bind:key="index" :subtitle="subtitle" />
-  <span>Ooijosifjosidjf</span>
+  <SolidEditorSubtitle v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
 </div>
 </template>
 
 <script>
 import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
+import {
+  sanitizeEditorSpan
+} from './misc'
 
 export default {
   name: "SolidEditor",
@@ -43,26 +45,38 @@ export default {
   updated() {},
   mounted() {
 
-    // Prevent pasting html into the editor. Otherwise subtitle markup gets pasted.
+    // Remove editor spans from pasted text so as not to interfere with editors work
     this.$el.addEventListener("paste", function(e) {
       e.preventDefault();
-      var text = (e.originalEvent || e).clipboardData.getData('text/plain');
-      document.execCommand("insertHTML", false, text);
+      var sanitizedData, pastedData;
+      pastedData = (e.originalEvent || e).clipboardData.getData("text/html")
+      sanitizedData = sanitizeEditorSpan(pastedData)
+      document.execCommand("insertHTML", false, sanitizedData);
     });
 
     // prevent creating divs on enter
     this.$el.addEventListener("keypress", function keypress(event) {
       if (event.keyCode == 13) {
         event.preventDefault()
-        // if (window.getSelection().focusNode.parentElement === this.$el.lastChild) {
-          // window.getSelection().focusNode.parentElement.appendChild(document.createElement("br"))
-        // } else {
-          if (window.getSelection().focusOffset == window.getSelection().focusNode.length || window.getSelection().focusNode.nodeType != 3) {
-            document.execCommand('insertHTML', false, '<br><br>');
-          } else {
-            document.execCommand('insertHTML', false, '<br>');
+
+
+        if (window.getSelection().focusOffset == window.getSelection().focusNode.length || window.getSelection().focusNode.nodeType != 3) {
+          document.execCommand('insertHTML', false, '&nbsp;');
+          var sel = window.getSelection();
+          var charCount = -1
+          if (sel.rangeCount > 0) {
+            var textNode = sel.focusNode;
+            var newOffset = sel.focusOffset + charCount;
+            sel.collapse(textNode, Math.min(textNode.length, newOffset));
           }
-        // }
+        } else {
+          // document.execCommand('insertHTML', false, '<br>');
+
+        }
+
+
+        document.execCommand('insertHTML', false, '<br>');
+
         return false;
       }
     }.bind(this))
@@ -76,12 +90,13 @@ export default {
 div {
   display: block;
   position: relative;
-  width: 600px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
   background: lightgray;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 5px;
+  box-sizing: border-box;
   /* will-change: contents; */
-  white-space: pre;
+  /* white-space: pre; */
 }
 </style>

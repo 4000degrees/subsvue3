@@ -78,13 +78,14 @@ export default {
 
 <style scoped>
 div {
-  width: 600px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   padding: 10px;
-  border: 2px solid grey;
-  margin: 10px;
+  /* border: 2px solid grey; */
+  box-sizing:border-box;
+  /* margin: 10px; */
   /* important */
-  white-space: pre;
+  /* white-space: pre; */
   /*  */
 }
 </style>

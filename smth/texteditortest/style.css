@@ -1,0 +1,21 @@
+#editor {
+  display: inline-block;
+  width: 600px;
+  height: 400px;
+  background: lightgray;
+}
+
+.subtitle {
+  /* display: inline-block; */
+}
+.subtitle:hover {
+  background-color: gray;
+}
+
+.subtitle.focus {
+  background-color: lightpink;
+}
+.subtitle:after {
+    content: " ";
+    white-space: pre;
+}

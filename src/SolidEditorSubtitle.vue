@@ -4,6 +4,7 @@
 
 <script>
 import {
+  sanitizeEditorSpan,
   convertHTMLEntities
 } from "./misc.js"
 export default {
@@ -16,18 +17,24 @@ export default {
     };
   },
   mounted() {
-    this.$store.commit("setSubtitleElement", {
-      obj: this.subtitle,
-      el: this.$el
-    })
-    this.$el.innerHTML = ' ' + this.text
+    // this.$store.commit("setSubtitleElement", {
+    //   obj: this.subtitle,
+    //   el: this.$el
+    // })
+
+if (this.text.charAt(0) != ' ') {
+
+}
+
+    this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ')  + this.text
+
     document.addEventListener('selectionchange', this.onSelectionChange);
 
     // prevent inserting subtitle spans markup when drag n dropping
     this.$el.addEventListener("dragstart", (ev) => {
       var sanitizedData, draggedData;
       draggedData = ev.dataTransfer.getData("text/html")
-      sanitizedData = draggedData.replace(/<\/?(\s+)?span([^>]+)?>/gim,"")
+      sanitizedData = sanitizeEditorSpan(draggedData)
       ev.dataTransfer.clearData("text/html")
       ev.dataTransfer.setData("text/html", sanitizedData)
     })
@@ -56,11 +63,8 @@ export default {
     }
   },
   computed: {
-    editorFocused: {
-      cache: false,
-      get() {
-        return this.$parent.$el.contains(window.getSelection().focusNode);
-      }
+    editorFocused() {
+        return this.$parent.$el.contains(document.activeElement);
     },
     selected() {
       return this.$store.state.currentSubtitle === this.subtitle
@@ -98,7 +102,8 @@ export default {
 <style scoped>
 span {
   /* white-space: pre; */
-
+    /* white-space: break-spaces; */
+    white-space: pre-wrap;
 }
 /* span:nth-child(50n) {
   display:block;

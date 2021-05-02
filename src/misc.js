@@ -59,3 +59,8 @@ export function sec2time(timeInSeconds) {
 export function ms2time(ms) {
   return sec2time(ms / 1000);
 }
+
+
+export function sanitizeEditorSpan(text) {
+  return text.replace(/<\/?(\s+)?span([^>]+)?>/gim,"")
+}

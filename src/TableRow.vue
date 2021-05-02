@@ -19,13 +19,16 @@ export default {
   },
   created() {},
   data() {
-    return {
-    };
+    return {};
   },
   watch: {
     selected(newValue) {
       if (newValue == true) {
         this.$el.classList.add("focus")
+        if (!this.tableFocused) {
+          let offsetTop = this.$el.offsetTop - (this.$el.parentNode.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
+          this.$el.parentNode.parentNode.scrollTop = offsetTop
+        }
       } else {
         this.$el.classList.remove("focus")
       }
@@ -45,7 +48,10 @@ export default {
     },
     selected() {
       return this.$store.state.currentSubtitle === this.subtitle
-    }
+    },
+    tableFocused() {
+      return this.$parent.$el.contains(document.activeElement);
+    },
   }
 }
 </script>
