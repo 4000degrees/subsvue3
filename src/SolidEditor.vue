@@ -23,6 +23,12 @@ export default {
   },
   computed: {
     subtitles() {
+      /*
+      when subtitle spans get deleted from editor,
+      they are marked as deleted, other components get filtered
+       list of undeleted subtitles, while this editor
+        gets all, because otherwise it causes a change and ctrl+z stops working
+      */
       return this.$store.getters.evenDeletedSubtitles
     },
     currentSubtitle() {
@@ -31,12 +37,12 @@ export default {
   },
   methods: {
     onChildListChange(mutationsList) {
-      // Watch deletions of subtitles in the editor to delete them in the model
+      // Watch deletions of subtitles in the editor to delete them in the store
       for (const mutation of mutationsList) {
-        if (mutation.removedNodes[0] && mutation.removedNodes[0].__vue__) {
-          this.$store.commit("deleteSubtitle", mutation.removedNodes[0].__vue__.subtitle)
-        } else if (mutation.addedNodes[0] && mutation.addedNodes[0].__vue__) {
-          this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].__vue__.subtitle)
+        if (mutation.removedNodes[0] && mutation.removedNodes[0].__vueParentComponent) {
+          this.$store.commit("deleteSubtitle", mutation.removedNodes[0].__vueParentComponent.ctx.subtitle)
+        } else if (mutation.addedNodes[0] && mutation.addedNodes[0].__vueParentComponent) {
+          this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].__vueParentComponent.ctx.subtitle)
         }
       }
     }
