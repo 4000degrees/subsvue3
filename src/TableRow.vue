@@ -2,7 +2,7 @@
 <tr @click="onClick()">
   <td>{{start}}</td>
   <td>{{end}}</td>
-  <td v-html="subtitle.text"></td>
+  <td v-html="subtitle.text" class="text"></td>
 </tr>
 </template>
 
@@ -57,6 +57,9 @@ export default {
 </script>
 
 <style scoped>
+.text {
+  width: 100%;
+}
 tr:hover {
   background: lightgrey;
 }

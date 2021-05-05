@@ -7,6 +7,9 @@ import sampleData from "./sampleData.js"
 import parser from "./subsFormatsParser"
 
 import style from './style.css'
+
+require("./setHotkeys.js")
+
 //
 Vue.directive('observer', observer);
 // Vue.use(observer)
@@ -24,3 +27,5 @@ var app = new Vue({
     App,
   },
 })
+
+window["app"] = app

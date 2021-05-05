@@ -1,8 +1,10 @@
 export function convertHTMLEntities(text) {
-  var ta;
+  var ta, converted;
   ta = document.createElement("textarea");
   ta.innerHTML = text;
-  return ta.innerText;
+  coverted = ta.innerText;
+  ta.remove()
+  return converted;
 }
 
 export function uniqueID(list = null) {
@@ -60,7 +62,75 @@ export function ms2time(ms) {
   return sec2time(ms / 1000);
 }
 
+export function ms2sec(ms) {
+  return ms / 1000
+}
+
+export function sec2ms(sec) {
+  return sec * 1000
+}
+
+export function timeLengthMs(start, end) {
+  return end - start
+}
+
+export function getTextSelectionWhithin(element) {
+  // get text selection including newlines
+  // https://stackoverflow.com/a/54352392
+  const getTextSelection = function(editor) {
+    const selection = window.getSelection();
+
+    if (selection != null && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+
+      if (!editor.contains(range.startContainer) || !editor.contains(range.endContainer)) {
+        return null
+      }
+
+      return {
+        start: getTextLength(editor, range.startContainer, range.startOffset),
+        end: getTextLength(editor, range.endContainer, range.endOffset)
+      };
+    } else
+      return null;
+  }
+
+  const getTextLength = function(parent, node, offset) {
+    var textLength = 0;
+    if (node.nodeName == '#text')
+      textLength += offset;
+    else
+      for (var i = 0; i < offset; i++)
+        textLength += getNodeTextLength(node.childNodes[i]);
+
+    if (node != parent)
+      textLength += getTextLength(parent, node.parentNode, getNodeOffset(node));
+
+    return textLength;
+  }
+
+  const getNodeTextLength = function(node) {
+    var textLength = 0;
+
+    if (node.nodeName == 'BR')
+      textLength = 1;
+    else if (node.nodeName == '#text')
+      textLength = node.nodeValue.length;
+    else if (node.childNodes != null)
+      for (var i = 0; i < node.childNodes.length; i++)
+        textLength += getNodeTextLength(node.childNodes[i]);
+
+    return textLength;
+  }
+
+  const getNodeOffset = function(node) {
+    return node == null ? -1 : 1 + getNodeOffset(node.previousSibling);
+  }
+
+  return getTextSelection(element)
+}
+
 
 export function sanitizeEditorSpan(text) {
-  return text.replace(/<\/?(\s+)?span([^>]+)?>/gim,"")
+  return text.replace(/<\/?(\s+)?span([^>]+)?>/gim, "")
 }

@@ -8,6 +8,9 @@
       <button type="button" @click="save">Save</button>
       <button type="button" @click="load">Load</button>
       <button type="button" @click="saveFile">Download srt</button>
+      <label for="videoFollowsSubtitles">Video time follows subtitles
+        <input type="checkbox" name="videoFollowsSubtitles" v-model="videoFollowsSubtitles">
+      </label>
       <FileInput />
     </div>
   </div>
@@ -55,6 +58,11 @@ import {
 import 'gridstack/dist/h5/gridstack-dd-native';
 
 
+import {
+  mapGetters
+} from 'vuex'
+
+
 export default {
   name: "App",
   components: {
@@ -68,7 +76,7 @@ export default {
   props: [],
   mounted() {
 
-    this.$store.state.gridStackData.forEach((item, i) => {
+    this.$store.state.gridStackData.forEach((item) => {
       let el = document.querySelector("[data-grid-ref='" + item.dataRef + "']")
       el.setAttribute("gs-x", item.x)
       el.setAttribute("gs-y", item.y)
@@ -78,14 +86,13 @@ export default {
 
     var gridstack = GridStack.init({
       float: true,
-      cellHeight: "20px",
-      cellWidth: "20px",
+      cellHeight: "1em",
+      // cellWidth: "20px",
       minRow: 1,
       margin: 3
     });
 
     gridstack.on("change", () => {
-      console.log("change");
       let griddata = Array.from(document.querySelectorAll(".grid-stack-item")).map(el => {
         return {
           dataRef: el.dataset["gridRef"],
@@ -98,9 +105,7 @@ export default {
       this.$store.commit("updateGridStackData", griddata)
     })
 
-    console.log(gridstack)
     window["gridstack"] = gridstack
-    // this.$store.commit("setCurrentSubtitle", this.$store.state.subtitles[0])
   },
   data() {
     return {};
@@ -115,6 +120,16 @@ export default {
     saveFile() {
       saveFile(this.$store.getters.subtitles)
     }
+  },
+  computed: {
+    videoFollowsSubtitles: {
+      get() {
+        return this.$store.videoFollowsSubtitles
+      },
+      set(v) {
+        this.$store.state.videoFollowsSubtitles = v
+      }
+    },
   }
 }
 </script>

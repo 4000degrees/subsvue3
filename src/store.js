@@ -3,7 +3,9 @@ import Vuex from "vuex";
 import VuexPersistence from 'vuex-persist'
 import {
   uniqueID,
-  getFileExtension
+  getFileExtension,
+  sec2ms,
+  timeLengthMs
 } from './misc'
 import subsFormatsParser, {
   formatSupported
@@ -19,14 +21,48 @@ const vuexLocal = new VuexPersistence({
 
 
 
-
 const state = {
   subtitles: [],
   currentSubtitle: {},
   projectOpened: false,
   settings: {},
-  currentTime: 0,
-  gridStackData: null
+  gridStackData: [{
+    "dataRef": "button-container",
+    "x": "4",
+    "y": "0",
+    "w": "1",
+    "h": "17"
+  }, {
+    "dataRef": "player",
+    "x": "0",
+    "y": "0",
+    "w": "4",
+    "h": "17"
+  }, {
+    "dataRef": "solid-editor",
+    "x": "5",
+    "y": "0",
+    "w": "4",
+    "h": "17"
+  }, {
+    "dataRef": "single-subtitle-ce",
+    "x": "9",
+    "y": "0",
+    "w": "3",
+    "h": "6"
+  }, {
+    "dataRef": "subtitle-table",
+    "x": "0",
+    "y": "17",
+    "w": "5",
+    "h": "32"
+  }],
+  player: null,
+  videoFollowsSubtitles: true,
+  currentSubtitleSelection: {
+    start: 0,
+    end: 0
+  }
 }
 
 const getters = {
@@ -47,7 +83,7 @@ const getters = {
   },
   currentTime(state) {
     if (state.currentSubtitle) {
-      state.currentSubtitle.start
+      return state.currentSubtitle.start
     } else {
       return 0
     }
@@ -101,6 +137,33 @@ const actions = {
     reader.onerror = function() {
       console.log(reader.error);
     };
+  },
+  skipForward(context, seconds = 0.3) {
+    context.state.player.currentTime += seconds
+  },
+  skipBackward(context, seconds = 0.3) {
+    context.state.player.currentTime -= seconds
+  },
+  playPause(context) {
+    if (context.state.player.paused == true) {
+      context.state.player.play();
+    } else {
+      context.state.player.pause();
+    }
+  },
+  setStartTimeToVideo(context) {
+    context.state.currentSubtitle.start = sec2ms(context.state.player.currentTime)
+  },
+  setEndTimeToVideo(context) {
+    context.state.currentSubtitle.end = sec2ms(context.state.player.currentTime)
+  },
+  shiftStartAndEndToVideo(context) {
+    let length = timeLengthMs(context.state.currentSubtitle.start, context.state.currentSubtitle.end)
+    context.state.currentSubtitle.start = sec2ms(context.state.player.currentTime)
+    context.state.currentSubtitle.end = sec2ms(context.state.player.currentTime) + length
+  },
+  splitAtVideoTime(context) {
+
   }
 };
 
@@ -143,11 +206,14 @@ const mutations = {
       }, 100);
     }
   },
-  setCurrentTime(state, data) {
-    store.currentTime = data
-  },
-  updateGridStackData(state,data) {
+  updateGridStackData(state, data) {
     state.gridStackData = data
+  },
+  setPlayer(state, player) {
+    state.player = player
+  },
+  setVideoFollows(state, data) {
+    state.videoFollowsSubtitles = data
   }
 
 };

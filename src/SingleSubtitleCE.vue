@@ -1,7 +1,7 @@
 
 
 <template>
-<div contenteditable @input="input"></div>
+<div tabindex="0" contenteditable @input="input"></div>
 </template>
 
 <script>

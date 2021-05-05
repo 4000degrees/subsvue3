@@ -15,6 +15,7 @@
   "dependencies": {
     "file-saver": "^2.0.5",
     "gridstack": "^4.2.2",
+    "hotkeys-js": "^3.8.3",
     "subtitles-parser": "0.0.2",
     "vue": "^2.6.12",
     "vue-mutation-observer": "^0.1.2",

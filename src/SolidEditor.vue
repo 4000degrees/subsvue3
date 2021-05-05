@@ -58,8 +58,6 @@ export default {
     this.$el.addEventListener("keypress", function keypress(event) {
       if (event.keyCode == 13) {
         event.preventDefault()
-
-
         if (window.getSelection().focusOffset == window.getSelection().focusNode.length || window.getSelection().focusNode.nodeType != 3) {
           document.execCommand('insertHTML', false, '&nbsp;');
           var sel = window.getSelection();
@@ -71,12 +69,8 @@ export default {
           }
         } else {
           // document.execCommand('insertHTML', false, '<br>');
-
         }
-
-
         document.execCommand('insertHTML', false, '<br>');
-
         return false;
       }
     }.bind(this))
@@ -92,7 +86,7 @@ div {
   position: relative;
   width: 100%;
   height: 100%;
-  background: lightgray;
+  /* background: lightgray; */
   overflow-y: scroll;
   padding: 5px;
   box-sizing: border-box;

@@ -1,27 +1,43 @@
 <template>
 <div @dragover="dragover" @dragleave="dragleave" @drop="drop">
-
   <video controls ref="player"></video>
 </div>
 </template>
 
 <script>
+import {
+  mapState
+} from 'vuex'
 export default {
   name: "VideoPlayer",
   components: {},
   props: [],
   computed: {
-    currentTime() {
-      return this.$store.getters.currentTime
+    currentTime: {
+      cache: false,
+      get() {
+        return this.$store.getters.currentTime
+      }
     },
+    ...mapState(["videoFollowsSubtitles"]),
   },
   watch: {
     currentTime(n) {
-      this.$refs.player.currentTime = n / 1000
+      if (this.videoFollowsSubtitles) {
+        this.$refs.player.currentTime = n / 1000
+      }
     }
   },
   mounted() {
     document.querySelector("[data-grid-ref='player'] > div").style.overflow = "hidden"
+
+    this.$store.commit("setPlayer", this.$refs.player)
+
+    // var player = videojs(this.$el);
+    //
+    window["player"] = this.$refs.player
+
+
 
     this.$refs.player.src = "http://localhost/test.mp4";
 
@@ -40,7 +56,6 @@ export default {
     },
     drop(event) {
       event.preventDefault();
-      console.log(event.dataTransfer.files);
       event.currentTarget.classList.remove('dragover');
       this.playLocalFile(event.dataTransfer.files[0])
     },
@@ -56,7 +71,7 @@ export default {
       var fileURL = URL.createObjectURL(file);
       this.$refs.player.src = fileURL;
     }
-  },
+  }
 
 } //
 </script>
@@ -68,16 +83,13 @@ div {
 
 video {
   max-width: 100%;
+  max-height: 100%;
   width: 100%;
   height: 100%;
 }
 
 .dragover {
   position: relative;
-}
-
-.dragover * {
-  pointer-events: none;
 }
 
 .dragover::before {
@@ -96,5 +108,6 @@ video {
   justify-content: center;
   align-content: center;
   flex-direction: column;
+  pointer-events: none;
 }
 </style>

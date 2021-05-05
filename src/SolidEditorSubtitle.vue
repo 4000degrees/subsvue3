@@ -1,11 +1,12 @@
 <template>
-<span v-observer:subtree.characterData.childList="mutationObserver"></span>
+<span :data-subtitle-id="subtitle.id" v-observer:subtree.characterData.childList="mutationObserver"></span>
 </template>
 
 <script>
 import {
   sanitizeEditorSpan,
-  convertHTMLEntities
+  convertHTMLEntities,
+  getTextSelectionWhithin
 } from "./misc.js"
 export default {
   name: "SolidEditorSubtitle",
@@ -17,16 +18,7 @@ export default {
     };
   },
   mounted() {
-    // this.$store.commit("setSubtitleElement", {
-    //   obj: this.subtitle,
-    //   el: this.$el
-    // })
-
-if (this.text.charAt(0) != ' ') {
-
-}
-
-    this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ')  + this.text
+    this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ') + this.text
 
     document.addEventListener('selectionchange', this.onSelectionChange);
 
@@ -63,8 +55,11 @@ if (this.text.charAt(0) != ' ') {
     }
   },
   computed: {
-    editorFocused() {
+    editorFocused: {
+      cache: false,
+      get() {
         return this.$parent.$el.contains(document.activeElement);
+      }
     },
     selected() {
       return this.$store.state.currentSubtitle === this.subtitle
@@ -89,6 +84,20 @@ if (this.text.charAt(0) != ' ') {
     },
     onSelectionChange() {
       if (this.$el.contains(window.getSelection().focusNode)) {
+        var text = this.$el.innerText
+        var selection = getTextSelectionWhithin(this.$el)
+        if (selection) {
+          this.$store.state.currentSubtitleSelection = {
+            text: text,
+            ...selection,
+            textBefore: text.substring(0, selection.start),
+            textSelected: text.slice(selection.start, selection.end),
+            textAfter: text.substring(selection.end, text.length)
+          }
+        } else {
+          this.$store.state.currentSubtitleSelection = null
+        }
+
         this.$store.commit("setCurrentSubtitle", this.subtitle)
       }
     }
@@ -102,9 +111,10 @@ if (this.text.charAt(0) != ' ') {
 <style scoped>
 span {
   /* white-space: pre; */
-    /* white-space: break-spaces; */
-    white-space: pre-wrap;
+  /* white-space: break-spaces; */
+  white-space: pre-wrap;
 }
+
 /* span:nth-child(50n) {
   display:block;
 } */
