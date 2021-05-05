@@ -1,6 +1,7 @@
-import Vue from "vue";
-import Vuex from "vuex";
 import VuexPersistence from 'vuex-persist'
+
+import { createStore } from 'vuex'
+
 import {
   uniqueID,
   getFileExtension,
@@ -11,8 +12,6 @@ import subsFormatsParser, {
   formatSupported
 } from './subsFormatsParser'
 import newSubtitle from './newSubtitle'
-
-Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -79,7 +78,7 @@ const getters = {
     return state.subtitles
   },
   currentSubtitle(state) {
-    return this.$store.state.currentSubtitle
+    return state.currentSubtitle
   },
   currentTime(state) {
     if (state.currentSubtitle) {
@@ -89,13 +88,13 @@ const getters = {
     }
   },
   currentSubtitleIndex(state) {
-    return store.state.subtitles.indexOf(store.state.currentSubtitle)
+    return state.subtitles.indexOf(state.currentSubtitle)
   },
   previousSubtitle(state, getters) {
-    return store.state.subtitles[getters.currentSubtitleIndex - 1]
+    return state.subtitles[getters.currentSubtitleIndex - 1]
   },
   nextSubtitle(state, getters) {
-    return store.state.subtitles[getters.currentSubtitleIndex + 1]
+    return state.subtitles[getters.currentSubtitleIndex + 1]
   }
 }
 
@@ -183,10 +182,10 @@ const mutations = {
     data.obj.el = data.el
   },
   deleteSubtitle(state, subtitle) {
-    Vue.set(subtitle, "deleted", true)
+    subtitle.deleted = true
   },
   undeleteSubtitle(state, subtitle) {
-    Vue.set(subtitle, "deleted", false)
+    subtitle.deleted = false
   },
   insertSubtitleAt(state, data) {
     state.subtitles.splice(data.index, 0, data.subtitle)
@@ -199,7 +198,7 @@ const mutations = {
   },
   updateSubtitle(state, data) {
     if (updateSubtitleTimeout) {
-      Vue.set(data.obj, "text", data.text)
+      data.obj.text = data.text
       updateSubtitleTimeout = false;
       setTimeout(function() {
         updateSubtitleTimeout = true;
@@ -219,7 +218,7 @@ const mutations = {
 };
 
 
-export default new Vuex.Store({
+export default createStore({
   state,
   getters,
   actions,

@@ -7,11 +7,11 @@ let config = {
 }
 
 export default {
-  bind (el, binding) {
+  beforeMount (el, binding) {
     const { value } = binding
     if (!value) return console.warn('vue-mutation-observer: "Please set callback or config object."')
   },
-  inserted (el, binding) {
+  mounted (el, binding) {
     const { value, modifiers, arg } = binding
     var observer = new MutationObserver(value)
     const cb = (typeof value === 'function' && value) || value.callback

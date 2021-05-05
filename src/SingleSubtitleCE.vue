@@ -8,7 +8,6 @@
 export default {
   name: "SingleSubtitleCE",
   components: {},
-  mounted() {},
   computed: {
     text: {
       get() {
@@ -30,7 +29,7 @@ export default {
   created() {
     document.addEventListener('focusin', this.focusChanged)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener('focusin', this.focusChanged)
   },
   mounted() {

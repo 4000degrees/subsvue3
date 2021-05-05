@@ -102,7 +102,7 @@ export default {
       }
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.addEventListener('selectionchange', this.onSelectionChange);
   }
 }
