@@ -1,5 +1,5 @@
 <template>
-<div id="SolidEditor" v-observer.childList="onChildListChange" contenteditable="true">
+<div id="SolidEditor" v-observer.childList="onChildListChange" @input="input" contenteditable="true">
   <SolidEditorSubtitle v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
 </div>
 </template>
@@ -7,7 +7,8 @@
 <script>
 import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
 import {
-  sanitizeEditorSpan
+  sanitizeEditorSpan,
+  getTextSelectionWhithin
 } from './misc'
 
 export default {
@@ -45,6 +46,12 @@ export default {
           this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].__vueParentComponent.ctx.subtitle)
         }
       }
+    },
+    input() {
+      this.$store.commit("updateSubtitle", {
+        obj: this.$store.state.currentSubtitle,
+        text: this.selectedSubtitleElement.innerHTML
+      })
     }
   },
   created() {},
@@ -80,6 +87,34 @@ export default {
         return false;
       }
     }.bind(this))
+
+
+    document.addEventListener("selectionchange", () => {
+      var selectedSubtitle = window.getSelection().focusNode
+      var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
+      while (this.$el.contains(selectedSubtitle) && this.$el != selectedSubtitle && !isSubtitle() && selectedSubtitle != null) {
+        selectedSubtitle = selectedSubtitle.parentNode
+      }
+      if (isSubtitle()) {
+        this.selectedSubtitleElement = selectedSubtitle
+        this.$store.commit("setCurrentSubtitle", selectedSubtitle.__vueParentComponent.ctx.subtitle)
+
+        var text = this.$el.innerText
+        var selection = getTextSelectionWhithin(this.selectedSubtitleElement)
+        if (selection) {
+          this.$store.state.currentSubtitleSelection = {
+            text: text,
+            ...selection,
+            textBefore: text.substring(0, selection.start),
+            textSelected: text.slice(selection.start, selection.end),
+            textAfter: text.substring(selection.end, text.length)
+          }
+        } else {
+          this.$store.state.currentSubtitleSelection = null
+        }
+
+      }
+    })
 
   },
   watch: {}

@@ -166,8 +166,6 @@ const actions = {
   }
 };
 
-var updateSubtitleTimeout = true;
-
 const mutations = {
   removeProjectData(state) {
     state.subtitles = []
@@ -197,13 +195,7 @@ const mutations = {
     state.subtitles = subtitleArray
   },
   updateSubtitle(state, data) {
-    if (updateSubtitleTimeout) {
-      data.obj.text = data.text
-      updateSubtitleTimeout = false;
-      setTimeout(function() {
-        updateSubtitleTimeout = true;
-      }, 100);
-    }
+    data.obj.text = data.text
   },
   updateGridStackData(state, data) {
     state.gridStackData = data

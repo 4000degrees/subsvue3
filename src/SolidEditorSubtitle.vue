@@ -1,5 +1,5 @@
 <template>
-<span :data-subtitle-id="subtitle.id" v-observer:subtree.characterData.childList="mutationObserver"></span>
+<span :data-subtitle-id="subtitle.id"></span>
 </template>
 
 <script>
@@ -35,7 +35,7 @@ export default {
   updated() {},
   watch: {
     text(newValue) {
-      if (!this.editorFocused) {
+      if (!this.editorFocused()) {
         this.$el.innerHTML = newValue
       }
     },
@@ -55,51 +55,18 @@ export default {
     }
   },
   computed: {
-    editorFocused: {
-      cache: false,
-      get() {
-        return this.$parent.$el.contains(document.activeElement);
-      }
-    },
     selected() {
       return this.$store.state.currentSubtitle === this.subtitle
     },
     text: {
       get() {
         return this.subtitle.text
-      },
-      set(text) {
-        this.$store.commit("updateSubtitle", {
-          obj: this.subtitle,
-          text: text
-        })
       }
     }
   },
   methods: {
-    // third way to detect input
-    // v-observer:subtree.characterData="onCharacterDataChange"
-    mutationObserver() {
-      this.text = this.$el.innerHTML
-    },
-    onSelectionChange() {
-      if (this.$el.contains(window.getSelection().focusNode)) {
-        var text = this.$el.innerText
-        var selection = getTextSelectionWhithin(this.$el)
-        if (selection) {
-          this.$store.state.currentSubtitleSelection = {
-            text: text,
-            ...selection,
-            textBefore: text.substring(0, selection.start),
-            textSelected: text.slice(selection.start, selection.end),
-            textAfter: text.substring(selection.end, text.length)
-          }
-        } else {
-          this.$store.state.currentSubtitleSelection = null
-        }
-
-        this.$store.commit("setCurrentSubtitle", this.subtitle)
-      }
+    editorFocused() {
+      return this.$parent.$el.contains(document.activeElement);
     }
   },
   beforeUnmount() {
