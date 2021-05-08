@@ -14,7 +14,6 @@ export default {
   props: ["subtitle"],
   data() {
     return {
-      drop: false
     };
   },
   computed: {
@@ -39,7 +38,7 @@ export default {
       }
       if (newValue == true) {
         this.$el.classList.add("focus")
-        if (!this.editorFocused) {
+        if (!this.editorFocused()) {
           let offsetTop = this.$el.offsetTop - (this.$el.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
           this.$el.parentNode.scrollTop = offsetTop
         }
@@ -63,11 +62,8 @@ export default {
   },
   mounted() {
     this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ') + this.text
-
-    document.addEventListener('selectionchange', this.onSelectionChange);
   },
   beforeUnmount() {
-    document.addEventListener('selectionchange', this.onSelectionChange);
   }
 }
 </script>
