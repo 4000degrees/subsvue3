@@ -1,3 +1,12 @@
+// commands: CommandManager.listCommands()
+// scopes: "all" + CommandManager.scopes
+// example:
+// {
+//   hotkey: "alt+left",
+//   scope: "all",
+//   command: "skip-backward"
+// }
+
 export default [
 
   {
