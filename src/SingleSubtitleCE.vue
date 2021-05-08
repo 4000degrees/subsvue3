@@ -20,10 +20,7 @@ export default {
         return this.$store.getters.currentSubtitleText
       },
       set(text) {
-        this.$store.commit("updateSubtitle", {
-          obj: this.$store.state.currentSubtitle,
-          text: text
-        })
+        this.$store.commit("updateCurrentSubtitleText", text)
       }
     }
   },

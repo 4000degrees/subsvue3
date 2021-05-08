@@ -1,0 +1,31 @@
+export default [{
+  "dataRef": "button-container",
+  "x": "4",
+  "y": "0",
+  "w": "1",
+  "h": "17"
+}, {
+  "dataRef": "player",
+  "x": "0",
+  "y": "0",
+  "w": "4",
+  "h": "17"
+}, {
+  "dataRef": "solid-editor",
+  "x": "5",
+  "y": "0",
+  "w": "4",
+  "h": "17"
+}, {
+  "dataRef": "single-subtitle-ce",
+  "x": "9",
+  "y": "0",
+  "w": "3",
+  "h": "6"
+}, {
+  "dataRef": "subtitle-table",
+  "x": "0",
+  "y": "17",
+  "w": "5",
+  "h": "32"
+}]

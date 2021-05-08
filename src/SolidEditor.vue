@@ -45,10 +45,7 @@ export default {
       }
     },
     input() {
-      this.$store.commit("updateSubtitle", {
-        obj: this.$store.state.currentSubtitle,
-        text: this.selectedSubtitleElement.innerHTML
-      })
+      this.$store.commit("updateCurrentSubtitleText", this.selectedSubtitleElement.innerHTML)
     },
     keypress(event) {
       // prevent creating divs on enter
