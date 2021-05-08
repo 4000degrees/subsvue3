@@ -1,6 +1,9 @@
 import VuexPersistence from 'vuex-persist'
+import defaultHotkeys from './defaultHotkeys'
 
-import { createStore } from 'vuex'
+import {
+  createStore
+} from 'vuex'
 
 import {
   uniqueID,
@@ -17,8 +20,6 @@ const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   key: "subs"
 })
-
-
 
 const state = {
   subtitles: [],
@@ -56,12 +57,9 @@ const state = {
     "w": "5",
     "h": "32"
   }],
-  player: null,
   videoFollowsSubtitles: true,
-  currentSubtitleSelection: {
-    start: 0,
-    end: 0
-  }
+  currentSubtitleSelection: null,
+  hotkeys: defaultHotkeys
 }
 
 const getters = {
@@ -137,33 +135,6 @@ const actions = {
       console.log(reader.error);
     };
   },
-  skipForward(context, seconds = 0.3) {
-    context.state.player.currentTime += seconds
-  },
-  skipBackward(context, seconds = 0.3) {
-    context.state.player.currentTime -= seconds
-  },
-  playPause(context) {
-    if (context.state.player.paused == true) {
-      context.state.player.play();
-    } else {
-      context.state.player.pause();
-    }
-  },
-  setStartTimeToVideo(context) {
-    context.state.currentSubtitle.start = sec2ms(context.state.player.currentTime)
-  },
-  setEndTimeToVideo(context) {
-    context.state.currentSubtitle.end = sec2ms(context.state.player.currentTime)
-  },
-  shiftStartAndEndToVideo(context) {
-    let length = timeLengthMs(context.state.currentSubtitle.start, context.state.currentSubtitle.end)
-    context.state.currentSubtitle.start = sec2ms(context.state.player.currentTime)
-    context.state.currentSubtitle.end = sec2ms(context.state.player.currentTime) + length
-  },
-  splitAtVideoTime(context) {
-
-  }
 };
 
 const mutations = {
@@ -208,7 +179,6 @@ const mutations = {
   }
 
 };
-
 
 export default createStore({
   state,

@@ -1,6 +1,6 @@
 import hotkeys from 'hotkeys-js'; //
 import store from './store'
-hotkeys.filter = function(event){
+hotkeys.filter = function(event) {
   return true;
 }
 hotkeys('alt+left', function(event, handler) {
@@ -32,3 +32,26 @@ hotkeys('alt+s', function(event, handler) {
   event.preventDefault()
   store.dispatch("splitAtVideoTime")
 });
+
+var defaulthotkeys = [{
+  hotkey: "alt+left",
+  command: "skip-backward"
+}, {
+  hotkey: "alt+right",
+  command: "skip-forward"
+}, {
+  hotkey: "ctrl+space",
+  command: "play"
+}, {
+  hotkey: "alt+d",
+  command: "set-start"
+}, {
+  hotkey: "alt+e",
+  command: "set-end"
+}, {
+  hotkey: "alt+h",
+  command: "shift"
+}, {
+  hotkey: "alt+s",
+  command: "split"
+}]

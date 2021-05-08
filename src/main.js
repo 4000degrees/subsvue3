@@ -5,7 +5,7 @@ import App from './App.vue'
 import store from './store'
 import observer from './observerDirective'
 import style from './style.css'
-require("./setHotkeys.js")
+
 
 const app = createApp(App)
 app.directive('observer', observer);

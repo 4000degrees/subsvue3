@@ -27,8 +27,8 @@ export default {
       /*
       when subtitle spans get deleted from editor,
       they are marked as deleted, other components get filtered
-       list of undeleted subtitles, while this editor
-        gets all, because otherwise it causes a change and ctrl+z stops working
+      list of undeleted subtitles, while this editor
+      gets all, because otherwise it causes a change and ctrl+z stops working
       */
       return this.$store.getters.evenDeletedSubtitles
     },
@@ -90,6 +90,7 @@ export default {
 
 
     document.addEventListener("selectionchange", () => {
+
       var selectedSubtitle = window.getSelection().focusNode
       var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
       while (this.$el.contains(selectedSubtitle) && this.$el != selectedSubtitle && !isSubtitle() && selectedSubtitle != null) {

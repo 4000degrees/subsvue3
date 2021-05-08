@@ -1,5 +1,3 @@
-
-
 <template>
 <div id="app" class="grid-stack">
 
@@ -18,7 +16,7 @@
 
   <div class="grid-stack-item" data-grid-ref="player">
     <div class="grid-stack-item-content">
-      <VideoPlayer />
+      <VideoPlayer ref="player" />
     </div>
   </div>
 
@@ -51,12 +49,13 @@ import FileInput from "./FileInput.vue";
 import VideoPlayer from "./VideoPlayer.vue";
 import saveFile from './saveFile'
 
+import CommandManager from './commandManager'
+
 import 'gridstack/dist/gridstack.min.css';
 import {
   GridStack
 } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
-
 
 import {
   mapGetters
@@ -106,6 +105,15 @@ export default {
     })
 
     window["gridstack"] = gridstack
+
+
+    var cm = new CommandManager({
+      player: this.$refs.player.$refs.playerElement,
+      state: this.$store.state
+    })
+
+
+    window["cm"] = cm
   },
   data() {
     return {};

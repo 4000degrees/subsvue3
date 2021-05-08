@@ -1,6 +1,6 @@
 <template>
 <div @dragover="dragover" @dragleave="dragleave" @drop="drop">
-  <video controls ref="player"></video>
+  <video controls ref="playerElement"></video>
 </div>
 </template>
 
@@ -24,22 +24,16 @@ export default {
   watch: {
     currentTime(n) {
       if (this.videoFollowsSubtitles) {
-        this.$refs.player.currentTime = n / 1000
+        this.$refs.playerElement.currentTime = n / 1000
       }
     }
   },
   mounted() {
     document.querySelector("[data-grid-ref='player'] > div").style.overflow = "hidden"
 
-    this.$store.commit("setPlayer", this.$refs.player)
+    window["player"] = this.$refs.playerElement
 
-    // var player = videojs(this.$el);
-    //
-    window["player"] = this.$refs.player
-
-
-
-    this.$refs.player.src = "http://localhost/test.mp4";
+    // this.$refs.player.src = "http://localhost/test.mp4";
 
 
   },
@@ -61,7 +55,7 @@ export default {
     },
     playLocalFile(file) {
       var type = file.type;
-      var canPlay = this.$refs.player.canPlayType(type);
+      var canPlay = this.$refs.playerElement.canPlayType(type);
       canPlay = (canPlay === '' ? 'no' : canPlay);
       var message = 'Can play type "' + type + '": ' + canPlay;
       var isError = canPlay === 'no';
@@ -69,11 +63,11 @@ export default {
         return;
       }
       var fileURL = URL.createObjectURL(file);
-      this.$refs.player.src = fileURL;
+      this.$refs.playerElement.src = fileURL;
     }
   }
 
-} //
+}
 </script>
 
 <style scoped>
