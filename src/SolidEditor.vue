@@ -11,16 +11,17 @@ import {
   getTextSelectionWhithin
 } from './misc'
 
+import focusable from './focusableMixin'
+
 export default {
   name: "SolidEditor",
+  mixins: [focusable],
   components: {
     SolidEditorSubtitle
   },
   props: {},
   data() {
-    return {
-      editorFocused: false
-    }
+    return {}
   },
   computed: {
     subtitles() {
@@ -55,6 +56,7 @@ export default {
     }
   },
   created() {},
+  beforeUnmount() {},
   updated() {},
   mounted() {
 
@@ -90,7 +92,6 @@ export default {
 
 
     document.addEventListener("selectionchange", () => {
-
       var selectedSubtitle = window.getSelection().focusNode
       var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
       while (this.$el.contains(selectedSubtitle) && this.$el != selectedSubtitle && !isSubtitle() && selectedSubtitle != null) {

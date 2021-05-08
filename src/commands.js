@@ -5,7 +5,9 @@ import {
 from './misc'
 
 
-export default [{
+export default [
+
+  {
     name: "play",
     description: "Play/pause",
     handler: function() {
@@ -51,6 +53,13 @@ export default [{
       let length = timeLengthMs(this.state.currentSubtitle.start, this.state.currentSubtitle.end)
       this.state.currentSubtitle.start = sec2ms(this.player.currentTime)
       this.state.currentSubtitle.end = sec2ms(this.player.currentTime) + length
+    }
+  },
+  {
+    name: "split",
+    description: "Split subtitle at cursor position, setting new end and start times at video time",
+    handler: function() {
+      console.log("not implemented");
     }
   }
 

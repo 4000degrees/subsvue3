@@ -61,9 +61,11 @@ import {
   mapGetters
 } from 'vuex'
 
+import focusable from './focusableMixin'
 
 export default {
   name: "App",
+  // mixins: [focusable],
   components: {
     SolidEditor,
     SingleSubtitleEditor,
@@ -106,14 +108,12 @@ export default {
 
     window["gridstack"] = gridstack
 
-
-    var cm = new CommandManager({
+    CommandManager.init({
       player: this.$refs.player.$refs.playerElement,
       state: this.$store.state
     })
 
-
-    window["cm"] = cm
+    window["cm"] = CommandManager
   },
   data() {
     return {};

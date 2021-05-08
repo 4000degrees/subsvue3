@@ -1,12 +1,15 @@
 
 
 <template>
-<div tabindex="0" contenteditable @input="input"></div>
+<div contenteditable @input="input"></div>
 </template>
 
 <script>
+import CommandManager from './commandManager'
+import focusable from './focusableMixin'
 export default {
   name: "SingleSubtitleCE",
+  mixins: [focusable],
   components: {},
   computed: {
     text: {
@@ -22,19 +25,10 @@ export default {
     }
   },
   data() {
-    return {
-      focused: false
-    };
-  },
-  created() {
-    document.addEventListener('focusin', this.focusChanged)
-  },
-  beforeUnmount() {
-    document.removeEventListener('focusin', this.focusChanged)
+    return {};
   },
   mounted() {
     this.$el.innerHTML = this.text
-
     // Prevent pasting html into the editor. Otherwise subtitle markup gets pasted.
     this.$el.addEventListener("paste", function(e) {
       e.preventDefault();
@@ -55,7 +49,6 @@ export default {
       }
     })
 
-
   },
   watch: {
     text(newValue) {
@@ -67,9 +60,6 @@ export default {
   methods: {
     input() {
       this.text = this.$el.innerHTML
-    },
-    focusChanged(event) {
-      this.focused = this.$el === event.target
     }
   }
 }
@@ -81,7 +71,7 @@ div {
   height: 100%;
   padding: 10px;
   /* border: 2px solid grey; */
-  box-sizing:border-box;
+  box-sizing: border-box;
   /* margin: 10px; */
   /* important */
   /* white-space: pre; */
