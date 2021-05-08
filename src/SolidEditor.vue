@@ -92,29 +92,29 @@ export default {
 
 
     document.addEventListener("selectionchange", () => {
-      var selectedSubtitle = window.getSelection().focusNode
-      var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
-      while (this.$el.contains(selectedSubtitle) && this.$el != selectedSubtitle && !isSubtitle() && selectedSubtitle != null) {
-        selectedSubtitle = selectedSubtitle.parentNode
-      }
-      if (isSubtitle()) {
-        this.selectedSubtitleElement = selectedSubtitle
-        this.$store.commit("setCurrentSubtitle", selectedSubtitle.__vueParentComponent.ctx.subtitle)
-
-        var text = this.$el.innerText
-        var selection = getTextSelectionWhithin(this.selectedSubtitleElement)
-        if (selection) {
-          this.$store.state.currentSubtitleSelection = {
-            text: text,
-            ...selection,
-            textBefore: text.substring(0, selection.start),
-            textSelected: text.slice(selection.start, selection.end),
-            textAfter: text.substring(selection.end, text.length)
-          }
-        } else {
-          this.$store.state.currentSubtitleSelection = null
+      if (window.getSelection().focusNode) {
+        var selectedSubtitle = window.getSelection().focusNode
+        var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
+        while (this.$el.contains(selectedSubtitle) && this.$el != selectedSubtitle && !isSubtitle() && selectedSubtitle != null) {
+          selectedSubtitle = selectedSubtitle.parentNode
         }
-
+        if (isSubtitle()) {
+          this.selectedSubtitleElement = selectedSubtitle
+          this.$store.commit("setCurrentSubtitle", selectedSubtitle.__vueParentComponent.ctx.subtitle)
+          var text = this.$el.innerText
+          var selection = getTextSelectionWhithin(this.selectedSubtitleElement)
+          if (selection) {
+            this.$store.state.currentSubtitleSelection = {
+              text: text,
+              ...selection,
+              textBefore: text.substring(0, selection.start),
+              textSelected: text.slice(selection.start, selection.end),
+              textAfter: text.substring(selection.end, text.length)
+            }
+          } else {
+            this.$store.state.currentSubtitleSelection = null
+          }
+        }
       }
     })
 
