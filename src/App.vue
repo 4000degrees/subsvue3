@@ -132,7 +132,7 @@ export default {
   computed: {
     videoFollowsSubtitles: {
       get() {
-        return this.$store.videoFollowsSubtitles
+        return this.$store.state.videoFollowsSubtitles
       },
       set(v) {
         this.$store.state.videoFollowsSubtitles = v
