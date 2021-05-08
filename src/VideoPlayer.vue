@@ -10,8 +10,6 @@ import {
 } from 'vuex'
 export default {
   name: "VideoPlayer",
-  components: {},
-  props: [],
   computed: {
     currentTime: {
       cache: false,
@@ -27,18 +25,6 @@ export default {
         this.$refs.playerElement.currentTime = n / 1000
       }
     }
-  },
-  mounted() {
-    document.querySelector("[data-grid-ref='player'] > div").style.overflow = "hidden"
-
-    window["player"] = this.$refs.playerElement
-
-    // this.$refs.player.src = "http://localhost/test.mp4";
-
-
-  },
-  data() {
-    return {};
   },
   methods: {
     dragover(event) {
@@ -65,7 +51,12 @@ export default {
       var fileURL = URL.createObjectURL(file);
       this.$refs.playerElement.src = fileURL;
     }
-  }
+  },
+  mounted() {
+    document.querySelector("[data-grid-ref='player'] > div").style.overflow = "hidden"
+    window["player"] = this.$refs.playerElement
+    // this.$refs.player.src = "http://localhost/test.mp4";
+  },
 
 }
 </script>

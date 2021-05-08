@@ -57,15 +57,8 @@ import {
 } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
 
-import {
-  mapGetters
-} from 'vuex'
-
-import focusable from './focusableMixin'
-
 export default {
   name: "App",
-  // mixins: [focusable],
   components: {
     SolidEditor,
     SingleSubtitleEditor,
@@ -75,6 +68,30 @@ export default {
     VideoPlayer
   },
   props: [],
+  data() {
+    return {};
+  },
+  computed: {
+    videoFollowsSubtitles: {
+      get() {
+        return this.$store.state.videoFollowsSubtitles
+      },
+      set(v) {
+        this.$store.state.videoFollowsSubtitles = v
+      }
+    },
+  },
+  methods: {
+    save() {
+      localStorage.setItem("state", JSON.stringify(this.$store.state))
+    },
+    load() {
+      this.$store.replaceState(JSON.parse(localStorage.getItem("state")))
+    },
+    saveFile() {
+      saveFile(this.$store.getters.subtitles)
+    }
+  },
   mounted() {
 
     this.$store.state.gridStackData.forEach((item) => {
@@ -115,30 +132,6 @@ export default {
 
     window["cm"] = CommandManager
   },
-  data() {
-    return {};
-  },
-  methods: {
-    save() {
-      localStorage.setItem("state", JSON.stringify(this.$store.state))
-    },
-    load() {
-      this.$store.replaceState(JSON.parse(localStorage.getItem("state")))
-    },
-    saveFile() {
-      saveFile(this.$store.getters.subtitles)
-    }
-  },
-  computed: {
-    videoFollowsSubtitles: {
-      get() {
-        return this.$store.state.videoFollowsSubtitles
-      },
-      set(v) {
-        this.$store.state.videoFollowsSubtitles = v
-      }
-    },
-  }
 }
 </script>
 

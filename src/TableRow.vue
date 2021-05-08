@@ -13,13 +13,26 @@ import {
 export default {
   name: "TableRow",
   components: {},
-  props: {
-    subtitle: "",
-    uniq: ""
-  },
-  created() {},
+  props: [
+    "subtitle",
+    "uniq"
+  ],
   data() {
     return {};
+  },
+  computed: {
+    start() {
+      return ms2time(this.subtitle.start)
+    },
+    end() {
+      return ms2time(this.subtitle.end)
+    },
+    selected() {
+      return this.$store.state.currentSubtitle === this.subtitle
+    },
+    tableFocused() {
+      return this.$parent.$el.contains(document.activeElement);
+    },
   },
   watch: {
     selected(newValue) {
@@ -39,20 +52,6 @@ export default {
       this.$store.commit("setCurrentSubtitle", this.subtitle)
     }
   },
-  computed: {
-    start() {
-      return ms2time(this.subtitle.start)
-    },
-    end() {
-      return ms2time(this.subtitle.end)
-    },
-    selected() {
-      return this.$store.state.currentSubtitle === this.subtitle
-    },
-    tableFocused() {
-      return this.$parent.$el.contains(document.activeElement);
-    },
-  }
 }
 </script>
 
@@ -60,6 +59,7 @@ export default {
 .text {
   width: 100%;
 }
+
 tr:hover {
   background: lightgrey;
 }

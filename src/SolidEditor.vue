@@ -1,5 +1,5 @@
 <template>
-<div id="SolidEditor" v-observer.childList="onChildListChange" @input="input" contenteditable="true">
+<div id="SolidEditor" v-observer.childList="onChildListChange" @input="input" @keypress="keypress" @paste="paste" contenteditable="true">
   <SolidEditorSubtitle v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
 </div>
 </template>
@@ -25,12 +25,8 @@ export default {
   },
   computed: {
     subtitles() {
-      /*
-      when subtitle spans get deleted from editor,
-      they are marked as deleted, other components get filtered
-      list of undeleted subtitles, while this editor
-      gets all, because otherwise it causes a change and ctrl+z stops working
-      */
+      /* when subtitle spans get deleted from editor, they are marked as deleted, other components get filtered
+      list of undeleted subtitles, while this editor gets all, because otherwise it causes a change and ctrl+z stops working */
       return this.$store.getters.evenDeletedSubtitles
     },
     currentSubtitle() {
@@ -53,24 +49,9 @@ export default {
         obj: this.$store.state.currentSubtitle,
         text: this.selectedSubtitleElement.innerHTML
       })
-    }
-  },
-  created() {},
-  beforeUnmount() {},
-  updated() {},
-  mounted() {
-
-    // Remove editor spans from pasted text so as not to interfere with editors work
-    this.$el.addEventListener("paste", function(e) {
-      e.preventDefault();
-      var sanitizedData, pastedData;
-      pastedData = (e.originalEvent || e).clipboardData.getData("text/html")
-      sanitizedData = sanitizeEditorSpan(pastedData)
-      document.execCommand("insertHTML", false, sanitizedData);
-    });
-
-    // prevent creating divs on enter
-    this.$el.addEventListener("keypress", function keypress(event) {
+    },
+    keypress(event) {
+      // prevent creating divs on enter
       if (event.keyCode == 13) {
         event.preventDefault()
         if (window.getSelection().focusOffset == window.getSelection().focusNode.length || window.getSelection().focusNode.nodeType != 3) {
@@ -88,10 +69,16 @@ export default {
         document.execCommand('insertHTML', false, '<br>');
         return false;
       }
-    }.bind(this))
-
-
-    document.addEventListener("selectionchange", () => {
+    },
+    paste(event) {
+      // Remove editor spans from pasted text so as not to interfere with editors work
+      event.preventDefault();
+      var sanitizedData, pastedData;
+      pastedData = (event.originalEvent || event).clipboardData.getData("text/html")
+      sanitizedData = sanitizeEditorSpan(pastedData)
+      document.execCommand("insertHTML", false, sanitizedData);
+    },
+    onSelectionChange() {
       if (window.getSelection().focusNode) {
         var selectedSubtitle = window.getSelection().focusNode
         var isSubtitle = () => selectedSubtitle.dataset ? selectedSubtitle.dataset["subtitleId"] : false
@@ -116,10 +103,12 @@ export default {
           }
         }
       }
-    })
-
+    }
   },
-  watch: {}
+  mounted() {
+    document.addEventListener("selectionchange", this.onSelectionChange)
+
+  }
 };
 </script>
 
@@ -129,7 +118,6 @@ div {
   position: relative;
   width: 100%;
   height: 100%;
-  /* background: lightgray; */
   overflow-y: scroll;
   padding: 5px;
   box-sizing: border-box;

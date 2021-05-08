@@ -8,6 +8,9 @@
 export default {
   name: "SingleSubtitleEditor",
   components: {},
+  data() {
+    return {};
+  },
   computed: {
     text: {
       get() {
@@ -20,9 +23,6 @@ export default {
         })
       }
     }
-  },
-  data() {
-    return {};
   },
   methods: {
     prepareText(text) {

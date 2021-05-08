@@ -21,7 +21,6 @@ export default {
     TableRow
   },
   props: {},
-  created() {},
   data() {
     return {};
   },

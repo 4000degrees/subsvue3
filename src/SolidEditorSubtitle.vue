@@ -1,5 +1,5 @@
 <template>
-<span :data-subtitle-id="subtitle.id"></span>
+<span :data-subtitle-id="subtitle.id" @dragstart="dragStart"></span>
 </template>
 
 <script>
@@ -17,22 +17,16 @@ export default {
       drop: false
     };
   },
-  mounted() {
-    this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ') + this.text
-
-    document.addEventListener('selectionchange', this.onSelectionChange);
-
-    // prevent inserting subtitle spans markup when drag n dropping
-    this.$el.addEventListener("dragstart", (ev) => {
-      var sanitizedData, draggedData;
-      draggedData = ev.dataTransfer.getData("text/html")
-      sanitizedData = sanitizeEditorSpan(draggedData)
-      ev.dataTransfer.clearData("text/html")
-      ev.dataTransfer.setData("text/html", sanitizedData)
-    })
+  computed: {
+    selected() {
+      return this.$store.state.currentSubtitle === this.subtitle
+    },
+    text: {
+      get() {
+        return this.subtitle.text
+      }
+    }
   },
-  created() {},
-  updated() {},
   watch: {
     text(newValue) {
       if (!this.editorFocused()) {
@@ -54,20 +48,23 @@ export default {
       }
     }
   },
-  computed: {
-    selected() {
-      return this.$store.state.currentSubtitle === this.subtitle
-    },
-    text: {
-      get() {
-        return this.subtitle.text
-      }
-    }
-  },
   methods: {
     editorFocused() {
       return this.$parent.$el.contains(document.activeElement);
+    },
+    dragStart(event) {
+      // prevent inserting subtitle spans markup when drag n dropping
+      var sanitizedData, draggedData;
+      draggedData = event.dataTransfer.getData("text/html")
+      sanitizedData = sanitizeEditorSpan(draggedData)
+      event.dataTransfer.clearData("text/html")
+      event.dataTransfer.setData("text/html", sanitizedData)
     }
+  },
+  mounted() {
+    this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ') + this.text
+
+    document.addEventListener('selectionchange', this.onSelectionChange);
   },
   beforeUnmount() {
     document.addEventListener('selectionchange', this.onSelectionChange);

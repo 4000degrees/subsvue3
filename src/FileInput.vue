@@ -17,7 +17,6 @@ export default {
   name: "FileInput",
   components: {},
   props: [],
-  created() {},
   data() {
     return {};
   },

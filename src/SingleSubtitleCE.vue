@@ -11,6 +11,9 @@ export default {
   name: "SingleSubtitleCE",
   mixins: [focusable],
   components: {},
+  data() {
+    return {};
+  },
   computed: {
     text: {
       get() {
@@ -24,8 +27,17 @@ export default {
       }
     }
   },
-  data() {
-    return {};
+  watch: {
+    text(newValue) {
+      if (!this.focused) {
+        this.$el.innerHTML = newValue
+      }
+    },
+  },
+  methods: {
+    input() {
+      this.text = this.$el.innerHTML
+    }
   },
   mounted() {
     this.$el.innerHTML = this.text
@@ -50,18 +62,6 @@ export default {
     })
 
   },
-  watch: {
-    text(newValue) {
-      if (!this.focused) {
-        this.$el.innerHTML = newValue
-      }
-    },
-  },
-  methods: {
-    input() {
-      this.text = this.$el.innerHTML
-    }
-  }
 }
 </script>
 
