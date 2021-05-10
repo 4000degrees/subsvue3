@@ -1,8 +1,8 @@
 export function convertHTMLEntities(text) {
-  var ta, converted;
+  let ta, converted;
   ta = document.createElement("textarea");
   ta.innerHTML = text;
-  coverted = ta.innerText;
+  converted = ta.innerText;
   ta.remove()
   return converted;
 }
@@ -27,20 +27,12 @@ export function getFileExtension(filename) {
 
 
 export function time2ms(time) {
-
-  split_comma = time.split(',')
-  split_semicolon = split_comma[0].split(':')
-  time = {}
-  time.ms = parseInt(split_comma[1])
-  time.ss = parseInt(split_semicolon[2])
-  time.mm = parseInt(split_semicolon[1])
-  time.hh = parseInt(split_semicolon[0])
-
-  ms = time.ms
-  ms = (time.ss * 1000) + ms
-  ms = ((time.mm * 60) * 1000) + ms
-  ms = (((time.hh * 60) * 60) * 1000) + ms
-
+  const byComma = time.split(',')
+  const bySemicolon = byComma[0].split(':')
+  const ss = parseInt(bySemicolon[2])
+  const mm = parseInt(bySemicolon[1])
+  const hh = parseInt(bySemicolon[0])
+  const ms = (((((hh * 60) + mm) * 60) + ss) * 1000) + parseInt(byComma[1])
   return ms
 }
 
