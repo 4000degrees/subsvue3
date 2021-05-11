@@ -6,10 +6,10 @@
 <script>
 import subsFormatsParser, {
   formatSupported
-} from './subsFormatsParser'
+} from '../subtitle-formats-parser'
 import {
   getFileExtension
-} from './misc'
+} from '../misc'
 import {
   mapActions
 } from 'vuex'

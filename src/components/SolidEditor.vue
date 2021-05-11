@@ -9,9 +9,9 @@ import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
 import {
   sanitizeEditorSpan,
   getTextSelectionWhithin
-} from './misc'
+} from '../misc'
 
-import focusable from './focusableMixin'
+import focusable from '../focusable-mixin'
 
 import {
   mapGetters

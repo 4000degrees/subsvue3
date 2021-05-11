@@ -1,6 +1,6 @@
 import VuexPersistence from 'vuex-persist'
-import defaultHotkeys from './defaultHotkeys'
-import defaultGridStackData from './defaultGridStackData'
+import defaultHotkeys from './default-hotkeys'
+import defaultGridStackData from './default-gridstack-data'
 
 import {
   createStore
@@ -12,7 +12,7 @@ import {
 } from './misc'
 import subsFormatsParser, {
   formatSupported
-} from './subsFormatsParser'
+} from './subtitle-formats-parser'
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,

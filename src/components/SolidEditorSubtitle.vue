@@ -7,7 +7,7 @@ import {
   sanitizeEditorSpan,
   convertHTMLEntities,
   getTextSelectionWhithin
-} from "./misc.js"
+} from "../misc.js"
 export default {
   name: "SolidEditorSubtitle",
   components: {},

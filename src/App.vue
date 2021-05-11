@@ -34,22 +34,22 @@
 
   <div class="grid-stack-item" data-grid-ref="subtitle-table">
     <div class="grid-stack-item-content">
-      <Table />
+      <SubtitleTable />
     </div>
   </div>
 </div>
 </template>
 
 <script>
-import SolidEditor from "./SolidEditor.vue";
-import SingleSubtitleEditor from "./SingleSubtitleEditor.vue";
-import SingleSubtitleCE from "./SingleSubtitleCE.vue";
-import Table from "./Table.vue";
-import FileInput from "./FileInput.vue";
-import VideoPlayer from "./VideoPlayer.vue";
-import saveFile from './saveFile'
+import SolidEditor from "./components/SolidEditor.vue";
+import SingleSubtitleEditor from "./components/SingleSubtitleEditor.vue";
+import SingleSubtitleCE from "./components/SingleSubtitleCE.vue";
+import SubtitleTable from "./components/SubtitleTable.vue";
+import FileInput from "./components/FileInput.vue";
+import VideoPlayer from "./components/VideoPlayer.vue";
+import saveFile from './save-file'
 
-import CommandManager from './commandManager'
+import CommandManager from './command-manager'
 
 import 'gridstack/dist/gridstack.min.css';
 import {
@@ -63,7 +63,7 @@ export default {
     SolidEditor,
     SingleSubtitleEditor,
     SingleSubtitleCE,
-    Table,
+    SubtitleTable,
     FileInput,
     VideoPlayer
   },

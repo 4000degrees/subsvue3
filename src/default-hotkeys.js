@@ -1,10 +1,12 @@
 // commands: CommandManager.listCommands()
 // scopes: "all" + CommandManager.scopes
+// preventDefault is called unless otherwise specified
 // example:
 // {
 //   hotkey: "alt+left",
 //   scope: "all",
 //   command: "skip-backward"
+// ? preventDefault: true
 // }
 
 export default [

@@ -8,21 +8,21 @@
     </tr>
   </thead>
   <tbody>
-    <TableRow v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
+    <SubtitleTableRow v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
   </tbody>
 </table>
 </template>
 
 <script>
-import TableRow from "./TableRow.vue";
+import SubtitleTableRow from "./SubtitleTableRow.vue";
 import {
   mapGetters
 } from 'vuex'
 
 export default {
-  name: "Table",
+  name: "SubtitleTable",
   components: {
-    TableRow
+    SubtitleTableRow
   },
   props: {},
   data() {

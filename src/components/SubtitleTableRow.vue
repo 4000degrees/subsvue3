@@ -9,9 +9,9 @@
 <script>
 import {
   ms2time
-} from './misc.js'
+} from '../misc.js'
 export default {
-  name: "TableRow",
+  name: "SubtitleTableRow",
   components: {},
   props: [
     "subtitle",

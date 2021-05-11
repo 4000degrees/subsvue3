@@ -5,8 +5,7 @@
 </template>
 
 <script>
-import CommandManager from './commandManager'
-import focusable from './focusableMixin'
+import focusable from '../focusable-mixin'
 export default {
   name: "SingleSubtitleCE",
   mixins: [focusable],

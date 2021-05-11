@@ -1,4 +1,4 @@
-import CommandManager from './commandManager'
+import CommandManager from './command-manager'
 
 
 const focusable = {
