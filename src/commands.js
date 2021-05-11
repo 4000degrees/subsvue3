@@ -4,7 +4,6 @@ import {
 }
 from './misc'
 
-
 export default [
 
   {
@@ -36,23 +35,23 @@ export default [
     name: "set-start",
     description: "Set subtitle start time to video time",
     handler: function() {
-      this.state.currentSubtitle.start = sec2ms(this.player.currentTime)
+      this.store.dispatch("updateCurrentSubtitleStart", sec2ms(this.player.currentTime))
     }
   },
   {
     name: "set-end",
     description: "Set subtitle end time to video time",
     handler: function() {
-      this.state.currentSubtitle.end = sec2ms(this.player.currentTime)
+      this.store.dispatch("updateCurrentSubtitleEnd", sec2ms(this.player.currentTime))
     }
   },
   {
     name: "shift",
     description: "Shift start and end times to video time",
     handler: function() {
-      let length = timeLengthMs(this.state.currentSubtitle.start, this.state.currentSubtitle.end)
-      this.state.currentSubtitle.start = sec2ms(this.player.currentTime)
-      this.state.currentSubtitle.end = sec2ms(this.player.currentTime) + length
+      let length = timeLengthMs(this.store.getters.currentSubtitle.start, this.store.getters.currentSubtitle.end)
+      this.store.dispatch("updateCurrentSubtitleStart", sec2ms(this.player.currentTime))
+      this.store.dispatch("updateCurrentSubtitleEnd", sec2ms(this.player.currentTime) + length)
     }
   },
   {

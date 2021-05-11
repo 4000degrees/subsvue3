@@ -13,12 +13,11 @@ export default {
   components: {},
   props: ["subtitle"],
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
     selected() {
-      return this.$store.state.currentSubtitle === this.subtitle
+      return this.$store.getters.currentSubtitle === this.subtitle
     },
     text: {
       get() {
@@ -63,8 +62,7 @@ export default {
   mounted() {
     this.$el.innerHTML = (this.text.charAt(0) == ' ' ? '' : ' ') + this.text
   },
-  beforeUnmount() {
-  }
+  beforeUnmount() {}
 }
 </script>
 
@@ -73,6 +71,8 @@ span {
   /* white-space: pre; */
   /* white-space: break-spaces; */
   white-space: pre-wrap;
+  display: inline-block;
+  min-width: 40px;
 }
 
 /* span:nth-child(50n) {

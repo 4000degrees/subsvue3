@@ -17,7 +17,7 @@ export default {
         return this.prepareText(this.$store.getters.currentSubtitleText)
       },
       set(text) {
-        this.$store.commit("updateCurrentSubtitleText", text.replace(/\n/gim, "<br>"))
+        this.$store.dispatch("updateCurrentSubtitleText", text.replace(/\n/gim, "<br>"))
       }
     }
   },

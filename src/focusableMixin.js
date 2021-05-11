@@ -14,11 +14,11 @@ const focusable = {
     CommandManager.deregisterScope(this.$options.name)
   },
   methods: {
-    focus(event) {
+    focus() {
       this.focused = true
       CommandManager.setScope(this.$options.name)
     },
-    blur(event) {
+    blur() {
       this.focused = false
       CommandManager.setScope("all")
     }

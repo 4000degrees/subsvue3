@@ -6,21 +6,17 @@
 
 <script>
 import {
-  mapState
+  mapState,
+  mapGetters
 } from 'vuex'
 export default {
   name: "VideoPlayer",
   computed: {
-    currentTime: {
-      cache: false,
-      get() {
-        return this.$store.getters.currentTime
-      }
-    },
-    ...mapState(["videoFollowsSubtitles"]),
+    ...mapGetters(["currentSubtitleStart"]),
+    ...mapState(["videoFollowsSubtitles"])
   },
   watch: {
-    currentTime(n) {
+    currentSubtitleStart(n) {
       if (this.videoFollowsSubtitles) {
         this.$refs.playerElement.currentTime = n / 1000
       }

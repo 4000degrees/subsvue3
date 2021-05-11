@@ -8,14 +8,11 @@ import {
 
 import {
   uniqueID,
-  getFileExtension,
-  sec2ms,
-  timeLengthMs
+  getFileExtension
 } from './misc'
 import subsFormatsParser, {
   formatSupported
 } from './subsFormatsParser'
-import newSubtitle from './newSubtitle'
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -23,23 +20,17 @@ const vuexLocal = new VuexPersistence({
 })
 
 const state = {
-  subtitles: [],
-  currentSubtitle: {},
+  subtitles: {},
+  currentSubtitle: null,
   projectOpened: false,
-  settings: {},
   gridStackData: defaultGridStackData,
   videoFollowsSubtitles: true,
-  currentSubtitleSelection: null,
   hotkeys: defaultHotkeys
 }
 
 const getters = {
-  currentSubtitleText(state) {
-    let currentSubtitle = state.currentSubtitle || state.subtitles[0]
-    return currentSubtitle.text || ""
-  },
   subtitles(state) {
-    return state.subtitles.filter((subtitle) => {
+    return Object.values(state.subtitles).filter((subtitle) => {
       return subtitle.deleted !== true
     })
   },
@@ -47,23 +38,18 @@ const getters = {
     return state.subtitles
   },
   currentSubtitle(state) {
-    return state.currentSubtitle
-  },
-  currentTime(state) {
-    if (state.currentSubtitle) {
-      return state.currentSubtitle.start
-    } else {
-      return 0
+    return state.currentSubtitle || Object.values(state.subtitles)[0] || {
+      id: null,
+      text: "",
+      start: 0,
+      end: 0
     }
   },
-  currentSubtitleIndex(state) {
-    return state.subtitles.indexOf(state.currentSubtitle)
+  currentSubtitleText(state, getters) {
+    return getters.currentSubtitle.text
   },
-  previousSubtitle(state, getters) {
-    return state.subtitles[getters.currentSubtitleIndex - 1]
-  },
-  nextSubtitle(state, getters) {
-    return state.subtitles[getters.currentSubtitleIndex + 1]
+  currentSubtitleStart(state, getters) {
+    return getters.currentSubtitle.start
   }
 }
 
@@ -71,26 +57,14 @@ const getters = {
 const actions = {
   newProject(context) {
     context.commit("removeProjectData")
-  },
-  insertAfterCurrent(context) {
-    context.commit("insertSubtitleAt", {
-      index: context.getters.currentSubtitleIndex + 1,
-      subtitle: newSubtitle()
-    })
-  },
-  pushSubtitle(context, data) {
-    context.commit("pushSubtitle", newSubtitle({
-      start: data.start,
-      end: data.end,
-      text: data.text
-    }))
+    context.state.projectOpened = true
   },
   openSubtitlesFile(context, event) {
     var file = event.target.files[0];
-    var extension = getFileExtension(file.name)
     if (!file) {
       return;
     }
+    var extension = getFileExtension(file.name)
     if (!formatSupported(extension)) {
       console.log("Unsupported");
       return;
@@ -99,56 +73,94 @@ const actions = {
     reader.readAsText(file);
     reader.onload = function(e) {
       var contents = e.target.result;
-      var subtitleArray = subsFormatsParser(contents, extension)
-      context.commit("importSubtitles", subtitleArray)
+      var parsedSubtitles = subsFormatsParser(contents, extension)
+      context.dispatch("newProject")
+      parsedSubtitles.forEach(subtitle => {
+        context.commit("addSubtitle", {
+          ...subtitle
+        })
+      })
     };
     reader.onerror = function() {
       console.log(reader.error);
     };
   },
+  updateCurrentSubtitleText(context, text) {
+    context.commit("updateSubtitleText", {
+      id: context.getters.currentSubtitle.id,
+      text
+    })
+  },
+  updateCurrentSubtitleStart(context, start) {
+    context.commit("updateSubtitleStart", {
+      id: context.getters.currentSubtitle.id,
+      start
+    })
+  },
+  updateCurrentSubtitleEnd(context, end) {
+    context.commit("updateSubtitleEnd", {
+      id: context.getters.currentSubtitle.id,
+      end
+    })
+  },
 };
 
 const mutations = {
   removeProjectData(state) {
-    state.subtitles = []
-    state.currentSubtitle = {}
-    state.currentTime = 0
-
+    state.subtitles = {}
+    state.currentSubtitle = null
   },
-  setCurrentSubtitle(state, subtitle) {
-    state.currentSubtitle = subtitle
+  importSubtitles(state, subtitles) {
+    state.subtitles = subtitles
   },
-  deleteSubtitle(state, subtitle) {
-    subtitle.deleted = true
+  setCurrentSubtitle(state, id) {
+    state.currentSubtitle = state.subtitles[id]
   },
-  undeleteSubtitle(state, subtitle) {
-    subtitle.deleted = false
+  addSubtitle(state, payload) {
+    var id = uniqueID()
+    state.subtitles[id] = {
+      id: id,
+      text: "",
+      start: 0,
+      end: 0,
+      ...payload
+    }
   },
-  insertSubtitleAt(state, data) {
-    state.subtitles.splice(data.index, 0, data.subtitle)
+  updateSubtitle(state, payload) {
+    state.subtitles[payload.id] = {
+      ...state.subtitles[payload.id],
+      ...payload
+    }
   },
-  pushSubtitle(state, subtitle) {
-    state.subtitles.push(subtitle)
+  updateSubtitleText(state, payload) {
+    state.subtitles[payload.id].text = payload.text
   },
-  importSubtitles(state, subtitleArray) {
-    state.subtitles = subtitleArray
+  updateSubtitleStart(state, payload) {
+    state.subtitles[payload.id].start = payload.start
   },
-  updateSubtitle(state, data) {
-    data.obj.text = data.text
+  updateSubtitleEnd(state, payload) {
+    state.subtitles[payload.id].end = payload.end
   },
-  updateCurrentSubtitleText(state, text) {
-    state.currentSubtitle.text = text
+  updateGridStackData(state, payload) {
+    state.gridStackData = payload
   },
-  updateGridStackData(state, data) {
-    state.gridStackData = data
+  deleteSubtitle(state, id) {
+    if (!state.subtitles[id].deleted) {
+      state.subtitles[id].deleted = true
+    }
   },
-  setVideoFollows(state, data) {
-    state.videoFollowsSubtitles = data
+  undeleteSubtitle(state, id) {
+    if (state.subtitles[id].deleted) {
+      state.subtitles[id].deleted = false
+    }
+  },
+  setVideoFollows(state, payload) {
+    state.videoFollowsSubtitles = payload
   }
 
 };
 
-export default createStore({
+const store = createStore({
   state,
   getters,
   actions,
@@ -156,4 +168,6 @@ export default createStore({
   plugins: [
     vuexLocal.plugin
   ]
-});
+})
+
+export default store;

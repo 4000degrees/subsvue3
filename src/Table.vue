@@ -15,6 +15,10 @@
 
 <script>
 import TableRow from "./TableRow.vue";
+import {
+  mapGetters
+} from 'vuex'
+
 export default {
   name: "Table",
   components: {
@@ -25,9 +29,7 @@ export default {
     return {};
   },
   computed: {
-    subtitles() {
-      return this.$store.getters.subtitles
-    },
+    ...mapGetters(["subtitles"])
   }
 }
 </script>

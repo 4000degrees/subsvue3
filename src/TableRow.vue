@@ -1,8 +1,8 @@
 <template>
-<tr @click="onClick()">
+<tr @click="onClick">
   <td>{{start}}</td>
   <td>{{end}}</td>
-  <td v-html="subtitle.text" class="text"></td>
+  <td v-html="subtitle.text" :data-subtitle-id="subtitle.id" class="text"></td>
 </tr>
 </template>
 
@@ -28,7 +28,7 @@ export default {
       return ms2time(this.subtitle.end)
     },
     selected() {
-      return this.$store.state.currentSubtitle === this.subtitle
+      return this.$store.getters.currentSubtitle === this.subtitle
     },
     tableFocused() {
       return this.$parent.$el.contains(document.activeElement);
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     onClick(event) {
-      this.$store.commit("setCurrentSubtitle", this.subtitle)
+      this.$store.commit("setCurrentSubtitle", this.subtitle.id)
     }
   },
 }

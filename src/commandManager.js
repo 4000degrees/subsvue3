@@ -1,18 +1,22 @@
 import commands from './commands'
-import defaultHotkeys from './defaultHotkeys'
 import hotkeys from 'hotkeys-js';
 import store from './store'
 
 const CommandManager = {
 
-  init(refs) {
-    this.setRefs(refs)
+  init(context) {
 
-    hotkeys.filter = function(event) {
+    this.setContext(context)
+
+    this.setContext({
+      store
+    })
+
+    hotkeys.filter = function() {
       return true;
     }
 
-    store.watch(state => state.hotkeys, (n, o) => {
+    store.watch(state => state.hotkeys, (n) => {
       this.bindHotkeys(n)
     }, {
       deep: true
@@ -21,17 +25,24 @@ const CommandManager = {
     this.bindHotkeys(store.state.hotkeys)
   },
 
+
   commands: commands.reduce((accumulator, current) => {
     accumulator[current.name] = current
     return accumulator
   }, {}),
 
   boundHotkeys: [],
-  
+
   scopes: ["all"],
 
-  setRefs(refs) {
-    this.refs = refs
+
+  context: {},
+
+  setContext(context) {
+    this.context = {
+      ...this.context,
+      ...context
+    }
   },
 
   listCommands() {
@@ -39,7 +50,7 @@ const CommandManager = {
   },
 
   exec(command) {
-    this.commands[command].handler.call(this.refs)
+    this.commands[command].handler.call(this.context)
   },
 
   unbindHotkeys() {
@@ -84,7 +95,7 @@ const CommandManager = {
       if (this.boundHotkeys.map(hk => hk.hotkey).includes(item.hotkey)) {
         console.log(`Hotkey ${item.hotkey} is already assigned to "${this.hotkeyCommands(item.hotkey).join(", ")}" within "${item.scope}" scope.`);
       }
-      hotkeys(item.hotkey, item.scope, function(event, handler) {
+      hotkeys(item.hotkey, item.scope, function(event) {
         if (item.preventDefault !== false) {
           event.preventDefault()
         }
