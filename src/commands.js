@@ -1,3 +1,4 @@
+import store from './store'
 import {
   sec2ms,
   timeLengthMs
@@ -59,6 +60,34 @@ export default [
     description: "Split subtitle at cursor position, setting new end and start times at video time",
     handler: function() {
       console.log("not implemented");
+    }
+  },
+  {
+    name: "undo",
+    description: "Undo last action",
+    handler: function() {
+      if (store.state.done.length) {
+        if (store.state.done[store.state.done.length - 1].undoMutation.type == "updateSubtitleText") {
+          store.state.undoing = true
+          document.execCommand("undo")
+          store.state.undoing = false
+        }
+        store.dispatch("undo")
+      }
+    }
+  },
+  {
+    name: "redo",
+    description: "Redo last action",
+    handler: function() {
+      if (store.state.undone.length) {
+        if (store.state.undone[store.state.undone.length - 1].mutation.type == "updateSubtitleText") {
+          store.state.undoing = true
+          document.execCommand("redo")
+          store.state.undoing = false
+        }
+        store.dispatch("redo")
+      }
     }
   }
 

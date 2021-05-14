@@ -25,7 +25,6 @@ const CommandManager = {
     this.bindHotkeys(store.state.hotkeys)
   },
 
-
   commands: commands.reduce((accumulator, current) => {
     accumulator[current.name] = current
     return accumulator
@@ -34,7 +33,6 @@ const CommandManager = {
   boundHotkeys: [],
 
   scopes: ["all"],
-
 
   context: {},
 

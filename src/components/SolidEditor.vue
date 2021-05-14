@@ -37,13 +37,13 @@ export default {
   methods: {
     onChildListChange(mutationsList) {
       // Watch deletions of subtitles in the editor to mark them as deleted in the store
-      for (const mutation of mutationsList) {
-        if (mutation.removedNodes[0] && mutation.removedNodes[0].classList.contains("SolidEditorSubtitle")) {
-          this.$store.commit("deleteSubtitle", mutation.removedNodes[0].dataset["subtitleId"])
-        } else if (mutation.addedNodes[0] && mutation.addedNodes[0].classList.contains("SolidEditorSubtitle")) {
-          this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].dataset["subtitleId"])
-        }
-      }
+      // for (const mutation of mutationsList) {
+      //   if (mutation.removedNodes[0] && mutation.removedNodes[0].classList.contains("SolidEditorSubtitle")) {
+      //     this.$store.commit("deleteSubtitle", mutation.removedNodes[0].dataset["subtitleId"])
+      //   } else if (mutation.addedNodes[0] && mutation.addedNodes[0].classList.contains("SolidEditorSubtitle")) {
+      //     this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].dataset["subtitleId"])
+      //   }
+      // }
     },
     input() {
       this.$store.dispatch("updateCurrentSubtitleText", this.selectedSubtitleElement.innerHTML)

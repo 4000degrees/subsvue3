@@ -19,13 +19,55 @@ const vuexLocal = new VuexPersistence({
   key: "subs"
 })
 
+
+function makeMutationsUndoable(mutations) {
+  for (var property in mutations) {
+    if (Object.keys(undoMutations).includes(property)) {
+      var type = property
+      var originalMutation = mutations[type]
+      var undoableMutation = function(state, payload) {
+        var undoMutation = undoMutations[type](state, payload)
+        if (!state.undoing) {
+          state.done.push({
+            mutation: {
+              type: type,
+              payload: payload
+            },
+            undoMutation: undoMutation
+          })
+          state.undone = []
+        }
+        originalMutation(state, payload)
+      }
+      mutations[type] = undoableMutation
+    }
+  }
+  return {
+    mutations
+  }
+}
+
+const undoMutations = {
+  "updateSubtitleText": (state, payload) => ({
+    type: "updateSubtitleText",
+    payload: {
+      id: payload.id,
+      text: state.subtitles[payload.id].text
+    }
+  }),
+}
+
+
 const state = {
   subtitles: {},
   currentSubtitle: null,
   projectOpened: false,
   gridStackData: defaultGridStackData,
   videoFollowsSubtitles: true,
-  hotkeys: defaultHotkeys
+  hotkeys: defaultHotkeys,
+  done: [],
+  undone: [],
+  undoing: false
 }
 
 const getters = {
@@ -103,6 +145,34 @@ const actions = {
       end
     })
   },
+  undo(context) {
+    var done = context.state.done
+    var undone = context.state.undone
+    if (done.length) {
+      context.state.undoing = true
+      var lastDone = done[done.length - 1]
+      context.commit(lastDone.undoMutation.type, lastDone.undoMutation.payload)
+      undone.push(lastDone)
+      done.splice(done.length - 1, 1)
+      context.state.undoing = false
+    }
+  },
+  redo(context) {
+    var done = context.state.done
+    var undone = context.state.undone
+    if (undone.length) {
+      context.state.undoing = true
+      var lastUndone = undone[undone.length - 1]
+      context.commit(lastUndone.mutation.type, lastUndone.mutation.payload)
+      done.push(lastUndone)
+      undone.splice(undone.length - 1, 1)
+      context.state.undoing = false
+    }
+  },
+  clearUndoRedo(context) {
+    context.state.done = []
+    context.state.undone = []
+  }
 };
 
 const mutations = {
@@ -164,9 +234,9 @@ const store = createStore({
   state,
   getters,
   actions,
-  mutations,
+  ...makeMutationsUndoable(mutations),
   plugins: [
-    vuexLocal.plugin
+    vuexLocal.plugin,
   ]
 })
 

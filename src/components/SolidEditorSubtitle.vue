@@ -27,9 +27,11 @@ export default {
   },
   watch: {
     text(newValue) {
-      if (!this.editorFocused()) {
+      // if (!this.editorFocused()) {
+      if (this.$el.innerHTML != newValue) {
         this.$el.innerHTML = newValue
       }
+      // }
     },
     selected(newValue) {
       if (!this.$el.parentNode) {

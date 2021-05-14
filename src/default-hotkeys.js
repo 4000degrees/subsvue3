@@ -6,7 +6,7 @@
 //   hotkey: "alt+left",
 //   scope: "all",
 //   command: "skip-backward"
-// ? preventDefault: true
+// ? preventDefault: false
 // }
 
 export default [
@@ -45,6 +45,16 @@ export default [
     hotkey: "alt+s",
     scope: "SolidEditor",
     command: "split"
+  },
+  {
+    hotkey: "ctrl+z",
+    scope: "all",
+    command: "undo",
+  },
+  {
+    hotkey: "ctrl+y",
+    scope: "all",
+    command: "redo"
   }
 
 ]
