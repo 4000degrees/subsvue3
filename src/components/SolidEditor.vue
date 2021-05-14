@@ -38,16 +38,23 @@ export default {
   methods: {
     onChildListChange(mutationsList) {
       // Watch deletions of subtitles in the editor to mark them as deleted in the store
-      // for (const mutation of mutationsList) {
-      //   if (mutation.removedNodes[0] && mutation.removedNodes[0].classList.contains("SolidEditorSubtitle")) {
-      //     this.$store.commit("deleteSubtitle", mutation.removedNodes[0].dataset["subtitleId"])
-      //   } else if (mutation.addedNodes[0] && mutation.addedNodes[0].classList.contains("SolidEditorSubtitle")) {
-      //     this.$store.commit("undeleteSubtitle", mutation.addedNodes[0].dataset["subtitleId"])
-      //   }
-      // }
+      var appendUndoGroup = false
+      for (const mutation of mutationsList) {
+        if (mutation.removedNodes[0] && mutation.removedNodes[0].dataset["subtitleId"]) {
+          this.$store.commit("markAsDeleted", {
+            id: mutation.removedNodes[0].dataset["subtitleId"],
+            // appendUndoGroup
+          })
+        }
+        else if (mutation.addedNodes[0] && mutation.addedNodes[0].dataset["subtitleId"]) {
+          this.$store.commit("unmarkAsDeleted", {id: mutation.addedNodes[0].dataset["subtitleId"]})
+        }
+      }
     },
     input() {
-      this.$store.dispatch("updateCurrentSubtitleText", this.selectedSubtitleElement.innerHTML)
+      this.$store.dispatch("updateCurrentSubtitleText", {
+        text: this.selectedSubtitleElement.innerHTML
+      })
     },
     keypress(event) {
       // prevent creating divs on enter

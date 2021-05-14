@@ -282,14 +282,14 @@ const mutations = {
   updateGridStackData(state, payload) {
     state.gridStackData = payload
   },
-  deleteSubtitle(state, id) {
-    if (!state.subtitles[id].deleted) {
-      state.subtitles[id].deleted = true
+  markAsDeleted(state, payload) {
+    if (!state.subtitles[payload.id].deleted) {
+      state.subtitles[payload.id].deleted = true
     }
   },
-  undeleteSubtitle(state, id) {
-    if (state.subtitles[id].deleted) {
-      state.subtitles[id].deleted = false
+  unmarkAsDeleted(state, payload) {
+    if (state.subtitles[payload.id].deleted) {
+      state.subtitles[payload.id].deleted = false
     }
   },
   setVideoFollows(state, payload) {

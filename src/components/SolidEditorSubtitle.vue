@@ -38,16 +38,16 @@ export default {
         return
       }
       if (newValue == true) {
-        this.$el.previousElementSibling.classList.add("focus-sibling")
-        this.$el.nextElementSibling.classList.add("focus-sibling")
+        this.$el.previousElementSibling ? this.$el.previousElementSibling.classList.add("focus-sibling") : null
+        this.$el.nextElementSibling ? this.$el.nextElementSibling.classList.add("focus-sibling") : null
         this.$el.classList.add("focus")
         if (!this.editorFocused()) {
           let offsetTop = this.$el.offsetTop - (this.$el.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
           this.$el.parentNode.scrollTop = offsetTop
         }
       } else {
-        this.$el.previousElementSibling.classList.remove("focus-sibling")
-        this.$el.nextElementSibling.classList.remove("focus-sibling")
+        this.$el.previousElementSibling ? this.$el.previousElementSibling.classList.remove("focus-sibling") : null
+        this.$el.nextElementSibling ? this.$el.nextElementSibling.classList.remove("focus-sibling") : null
         this.$el.classList.remove("focus")
       }
     }
@@ -135,6 +135,7 @@ span:hover {
 span.focus {
   background-color: lightpink;
 }
+
 span.focus-sibling {
   background-color: #eee;
 }
