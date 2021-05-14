@@ -16,7 +16,15 @@ import subsFormatsParser, {
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
-  key: "subs"
+  key: "subs",
+  reducer: state => ({
+    subtitles: state.subtitles,
+    currentSubtitle: state.currentSubtitle,
+    projectOpened: state.projectOpened,
+    gridStackData: state.gridStackData,
+    videoFollowsSubtitles: state.videoFollowsSubtitles,
+    hotkeys: state.hotkeys,
+  })
 })
 
 
@@ -80,18 +88,13 @@ const getters = {
     return state.subtitles
   },
   currentSubtitle(state) {
-    return state.currentSubtitle || Object.values(state.subtitles)[0] || {
-      id: null,
-      text: "",
-      start: 0,
-      end: 0
-    }
+    return state.currentSubtitle
   },
   currentSubtitleText(state, getters) {
-    return getters.currentSubtitle.text
+    return state.currentSubtitle ? state.subtitles[state.currentSubtitle].text : ""
   },
   currentSubtitleStart(state, getters) {
-    return getters.currentSubtitle.start
+    return state.currentSubtitle ? state.subtitles[state.currentSubtitle].start : 0
   }
 }
 
@@ -129,19 +132,19 @@ const actions = {
   },
   updateCurrentSubtitleText(context, text) {
     context.commit("updateSubtitleText", {
-      id: context.getters.currentSubtitle.id,
+      id: context.getters.currentSubtitle,
       text
     })
   },
   updateCurrentSubtitleStart(context, start) {
     context.commit("updateSubtitleStart", {
-      id: context.getters.currentSubtitle.id,
+      id: context.getters.currentSubtitle,
       start
     })
   },
   updateCurrentSubtitleEnd(context, end) {
     context.commit("updateSubtitleEnd", {
-      id: context.getters.currentSubtitle.id,
+      id: context.getters.currentSubtitle,
       end
     })
   },
@@ -184,7 +187,7 @@ const mutations = {
     state.subtitles = subtitles
   },
   setCurrentSubtitle(state, id) {
-    state.currentSubtitle = state.subtitles[id]
+    state.currentSubtitle = id
   },
   addSubtitle(state, payload) {
     var id = uniqueID()

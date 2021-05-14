@@ -8,7 +8,7 @@
     </tr>
   </thead>
   <tbody>
-    <SubtitleTableRow v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
+    <SubtitleTableRow v-for="(subtitle) in subtitles" :key="subtitle.id" />
   </tbody>
 </table>
 </template>

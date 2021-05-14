@@ -2,7 +2,7 @@
 <tr @click="onClick">
   <td>{{start}}</td>
   <td>{{end}}</td>
-  <td v-html="subtitle.text" :data-subtitle-id="subtitle.id" class="text"></td>
+  <td v-html="text" :data-subtitle-id="id" class="text"></td>
 </tr>
 </template>
 
@@ -14,21 +14,24 @@ export default {
   name: "SubtitleTableRow",
   components: {},
   props: [
-    "subtitle",
-    "uniq"
   ],
   data() {
-    return {};
+    return {
+      id: this.$.vnode.key
+    };
   },
   computed: {
+    text() {
+      return this.$store.state.subtitles[this.id].text
+    },
     start() {
-      return ms2time(this.subtitle.start)
+      return ms2time(this.$store.state.subtitles[this.id].start)
     },
     end() {
-      return ms2time(this.subtitle.end)
+      return ms2time(this.$store.state.subtitles[this.id].end)
     },
     selected() {
-      return this.$store.getters.currentSubtitle === this.subtitle
+      return this.$store.state.currentSubtitle === this.id
     },
     tableFocused() {
       return this.$parent.$el.contains(document.activeElement);
@@ -49,9 +52,13 @@ export default {
   },
   methods: {
     onClick(event) {
-      this.$store.commit("setCurrentSubtitle", this.subtitle.id)
+      this.$store.commit("setCurrentSubtitle", this.id)
     }
   },
+  mounted() {
+    console.log(this.id);
+    
+  }
 }
 </script>
 

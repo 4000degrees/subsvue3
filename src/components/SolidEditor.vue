@@ -1,6 +1,6 @@
 <template>
 <div id="SolidEditor" v-observer.childList="onChildListChange" @input="input" @keypress="keypress" @paste="paste" contenteditable="true">
-  <SolidEditorSubtitle v-for="subtitle in subtitles" :key="subtitle.id" :subtitle="subtitle" />
+  <SolidEditorSubtitle v-for="(subtitle, key, index) in subtitles" :key="key" :index="index" />
 </div>
 </template>
 
