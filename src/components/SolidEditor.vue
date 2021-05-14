@@ -1,6 +1,6 @@
 <template>
 <div id="SolidEditor" v-observer.childList="onChildListChange" @input="input" @keypress="keypress" @paste="paste" contenteditable="true">
-  <SolidEditorSubtitle v-for="(subtitle, key, index) in subtitles" :key="key" :index="index" />
+  <SolidEditorSubtitle v-for="(subtitle, index) in subtitles" :key="subtitle.id" :index="index" />
 </div>
 </template>
 
@@ -8,7 +8,8 @@
 import SolidEditorSubtitle from "./SolidEditorSubtitle.vue"
 import {
   sanitizeEditorSpan,
-  getTextSelectionWhithin
+  getSelectionStart,
+  getSelectionEnd
 } from '../misc'
 
 import focusable from '../focusable-mixin'
@@ -85,21 +86,28 @@ export default {
         }
         if (isSubtitle()) {
           this.selectedSubtitleElement = selectedSubtitle
-          this.$store.commit("setCurrentSubtitle", selectedSubtitle.dataset["subtitleId"])
-          var text = this.$el.innerText
-          var selection = getTextSelectionWhithin(this.selectedSubtitleElement)
-          if (selection) {
-            this.$store.state.currentSubtitleSelection = {
-              text: text,
-              ...selection,
-              textBefore: text.substring(0, selection.start),
-              textSelected: text.slice(selection.start, selection.end),
-              textAfter: text.substring(selection.end, text.length)
-            }
-          } else {
-            this.$store.state.currentSubtitleSelection = null
-          }
+          this.$store.commit("setCurrentSubtitle", {
+            id: selectedSubtitle.dataset["subtitleId"]
+          })
         }
+      }
+    },
+    getSelectionInSubtitle() {
+      var text = this.selectedSubtitleElement.innerText
+      var selection = {
+        start: getSelectionStart(this.selectedSubtitleElement),
+        end: getSelectionEnd(this.selectedSubtitleElement)
+      }
+      if (selection) {
+        return {
+          text: text,
+          ...selection,
+          textBefore: text.substring(0, selection.start),
+          textSelected: text.slice(selection.start, selection.end),
+          textAfter: text.substring(selection.end, text.length)
+        }
+      } else {
+        return null
       }
     }
   },

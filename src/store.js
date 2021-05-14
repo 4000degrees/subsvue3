@@ -29,27 +29,32 @@ const vuexLocal = new VuexPersistence({
 
 
 function makeMutationsUndoable(mutations) {
-  for (var property in mutations) {
-    if (Object.keys(undoMutations).includes(property)) {
-      var type = property
+  Object.keys(mutations).forEach(type => {
+    if (Object.keys(undoMutations).includes(type)) {
       var originalMutation = mutations[type]
       var undoableMutation = function(state, payload) {
         var undoMutation = undoMutations[type](state, payload)
         if (!state.undoing) {
-          state.done.push({
+          var undoEntry = {
             mutation: {
               type: type,
               payload: payload
             },
             undoMutation: undoMutation
-          })
+          }
+          var undoGroup = [undoEntry]
+          if ((payload.appendUndoGroup || store.state.appendUndoGroup) && state.done.length) {
+            state.done[state.done.length - 1].push(undoEntry)
+          } else {
+            state.done.push(undoGroup)
+          }
           state.undone = []
         }
         originalMutation(state, payload)
       }
       mutations[type] = undoableMutation
     }
-  }
+  })
   return {
     mutations
   }
@@ -61,6 +66,26 @@ const undoMutations = {
     payload: {
       id: payload.id,
       text: state.subtitles[payload.id].text
+    }
+  }),
+  "addSubtitle": (state, payload) => ({
+    type: "removeSubtitle",
+    payload: {
+      id: payload.subtitle.id
+    }
+  }),
+  "updateSubtitleStart": (state, payload) => ({
+    type: "updateSubtitleStart",
+    payload: {
+      id: payload.id,
+      start: state.subtitles[payload.id].start
+    }
+  }),
+  "updateSubtitleEnd": (state, payload) => ({
+    type: "updateSubtitleEnd",
+    payload: {
+      id: payload.id,
+      end: state.subtitles[payload.id].end
     }
   }),
 }
@@ -82,19 +107,27 @@ const getters = {
   subtitles(state) {
     return Object.values(state.subtitles).filter((subtitle) => {
       return subtitle.deleted !== true
+    }).sort((a, b) => {
+      return a.start - b.start
     })
   },
   evenDeletedSubtitles(state) {
-    return state.subtitles
+    return Object.values(state.subtitles).sort((a, b) => {
+      return a.start - b.start
+    })
   },
   currentSubtitle(state) {
-    return state.currentSubtitle
+    return state.currentSubtitle || {
+      start: 0,
+      end: 0,
+      text: ""
+    }
   },
   currentSubtitleText(state, getters) {
-    return state.currentSubtitle ? state.subtitles[state.currentSubtitle].text : ""
+    return getters.currentSubtitle.text
   },
   currentSubtitleStart(state, getters) {
-    return state.currentSubtitle ? state.subtitles[state.currentSubtitle].start : 0
+    return getters.currentSubtitle.start
   }
 }
 
@@ -103,6 +136,28 @@ const actions = {
   newProject(context) {
     context.commit("removeProjectData")
     context.state.projectOpened = true
+  },
+  addSubtitle(context, payload) {
+    var id = uniqueID()
+    var subtitle = {
+      id: id,
+      text: "",
+      start: 0,
+      end: 0,
+      ...payload.subtitle
+    }
+    context.commit("addSubtitle", {
+      ...payload,
+      ...{
+        subtitle
+      }
+    })
+  },
+  removeSubtitle(context, payload) {
+    if (context.getters.currentSubtitle.id == payload.id) {
+      context.dispatch("setNextSubtitleAsCurrent")
+    }
+    context.commit("removeSubtitle", payload)
   },
   openSubtitlesFile(context, event) {
     var file = event.target.files[0];
@@ -121,8 +176,9 @@ const actions = {
       var parsedSubtitles = subsFormatsParser(contents, extension)
       context.dispatch("newProject")
       parsedSubtitles.forEach(subtitle => {
-        context.commit("addSubtitle", {
-          ...subtitle
+        context.dispatch("addSubtitle", {
+          subtitle: subtitle,
+          appendUndoGroup: true
         })
       })
     };
@@ -130,32 +186,43 @@ const actions = {
       console.log(reader.error);
     };
   },
-  updateCurrentSubtitleText(context, text) {
+  updateCurrentSubtitleText(context, payload) {
     context.commit("updateSubtitleText", {
-      id: context.getters.currentSubtitle,
-      text
+      id: context.getters.currentSubtitle.id,
+      ...payload
     })
   },
-  updateCurrentSubtitleStart(context, start) {
+  updateCurrentSubtitleStart(context, payload) {
     context.commit("updateSubtitleStart", {
-      id: context.getters.currentSubtitle,
-      start
+      id: context.getters.currentSubtitle.id,
+      ...payload
     })
   },
-  updateCurrentSubtitleEnd(context, end) {
+  updateCurrentSubtitleEnd(context, payload) {
     context.commit("updateSubtitleEnd", {
-      id: context.getters.currentSubtitle,
-      end
+      id: context.getters.currentSubtitle.id,
+      ...payload
     })
+  },
+  setNextSubtitleAsCurrent(context) {
+    var currentIndex = context.getters.subtitles.indexOf(context.getters.currentSubtitle)
+    var nextSubtitle = context.getters.subtitles[currentIndex + 1]
+    if (nextSubtitle) {
+      context.commit("setCurrentSubtitle", {id:nextSubtitle.id})
+    } else {
+      context.commit("setCurrentSubtitle", null)
+    }
   },
   undo(context) {
     var done = context.state.done
     var undone = context.state.undone
     if (done.length) {
       context.state.undoing = true
-      var lastDone = done[done.length - 1]
-      context.commit(lastDone.undoMutation.type, lastDone.undoMutation.payload)
-      undone.push(lastDone)
+      var lastDoneGroup = done[done.length - 1]
+      lastDoneGroup.forEach(entry => {
+        context.commit(entry.undoMutation.type, entry.undoMutation.payload)
+      })
+      undone.push(lastDoneGroup)
       done.splice(done.length - 1, 1)
       context.state.undoing = false
     }
@@ -165,9 +232,11 @@ const actions = {
     var undone = context.state.undone
     if (undone.length) {
       context.state.undoing = true
-      var lastUndone = undone[undone.length - 1]
-      context.commit(lastUndone.mutation.type, lastUndone.mutation.payload)
-      done.push(lastUndone)
+      var lastUndoneGroup = undone[undone.length - 1]
+      lastUndoneGroup.forEach(entry => {
+        context.commit(entry.mutation.type, entry.mutation.payload)
+      })
+      done.push(lastUndoneGroup)
       undone.splice(undone.length - 1, 1)
       context.state.undoing = false
     }
@@ -186,18 +255,14 @@ const mutations = {
   importSubtitles(state, subtitles) {
     state.subtitles = subtitles
   },
-  setCurrentSubtitle(state, id) {
-    state.currentSubtitle = id
+  setCurrentSubtitle(state, payload) {
+    state.currentSubtitle = state.subtitles[payload.id]
   },
   addSubtitle(state, payload) {
-    var id = uniqueID()
-    state.subtitles[id] = {
-      id: id,
-      text: "",
-      start: 0,
-      end: 0,
-      ...payload
-    }
+    state.subtitles[payload.subtitle.id] = payload.subtitle
+  },
+  removeSubtitle(state, payload) {
+    delete state.subtitles[payload.id]
   },
   updateSubtitle(state, payload) {
     state.subtitles[payload.id] = {
@@ -239,7 +304,7 @@ const store = createStore({
   actions,
   ...makeMutationsUndoable(mutations),
   plugins: [
-    vuexLocal.plugin,
+    // vuexLocal.plugin,
   ]
 })
 

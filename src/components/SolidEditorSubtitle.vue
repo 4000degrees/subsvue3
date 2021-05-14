@@ -11,7 +11,7 @@ import {
 export default {
   name: "SolidEditorSubtitle",
   components: {},
-  props: ["key","index"],
+  props: ["key", "index"],
   data() {
     return {
       id: this.$.vnode.key,
@@ -19,12 +19,10 @@ export default {
   },
   computed: {
     selected() {
-      return this.$store.state.currentSubtitle === this.id
+      return this.$store.getters.currentSubtitle.id === this.id
     },
-    text: {
-      get() {
-        return this.$store.state.subtitles[this.id].text
-      }
+    text() {
+      return this.$store.state.subtitles[this.id] ? this.$store.state.subtitles[this.id].text : ""
     }
   },
   watch: {
@@ -40,12 +38,16 @@ export default {
         return
       }
       if (newValue == true) {
+        this.$el.previousElementSibling.classList.add("focus-sibling")
+        this.$el.nextElementSibling.classList.add("focus-sibling")
         this.$el.classList.add("focus")
         if (!this.editorFocused()) {
           let offsetTop = this.$el.offsetTop - (this.$el.parentNode.offsetHeight / 2 - this.$el.offsetHeight)
           this.$el.parentNode.scrollTop = offsetTop
         }
       } else {
+        this.$el.previousElementSibling.classList.remove("focus-sibling")
+        this.$el.nextElementSibling.classList.remove("focus-sibling")
         this.$el.classList.remove("focus")
       }
     }
@@ -98,14 +100,19 @@ export default {
      stuff. when selecting all text to copy there will be additional
      line breakes around block elements. */
     let everynth = 100
-    let nth = (Math.floor(this.index / everynth)) - (Math.floor((this.index - 1) / everynth))
-    if (nth) {
+    this.nth = (Math.floor(this.index / everynth)) - (Math.floor((this.index - 1) / everynth))
+    if (this.nth) {
       this.blockIfInvisible()
       this.$parent.$el.addEventListener("scroll", this.blockIfInvisible)
     }
 
   },
-  beforeUnmount() {}
+  beforeUnmount() {
+    if (this.nth) {
+      this.blockIfInvisible()
+      this.$parent.$el.removeEventListener("scroll", this.blockIfInvisible)
+    }
+  }
 }
 </script>
 
@@ -127,6 +134,9 @@ span:hover {
 
 span.focus {
   background-color: lightpink;
+}
+span.focus-sibling {
+  background-color: #eee;
 }
 
 /* span:before {

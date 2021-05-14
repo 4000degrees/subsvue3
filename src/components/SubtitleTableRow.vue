@@ -13,8 +13,7 @@ import {
 export default {
   name: "SubtitleTableRow",
   components: {},
-  props: [
-  ],
+  props: [],
   data() {
     return {
       id: this.$.vnode.key
@@ -31,7 +30,7 @@ export default {
       return ms2time(this.$store.state.subtitles[this.id].end)
     },
     selected() {
-      return this.$store.state.currentSubtitle === this.id
+      return this.$store.getters.currentSubtitle.id === this.id
     },
     tableFocused() {
       return this.$parent.$el.contains(document.activeElement);
@@ -52,12 +51,10 @@ export default {
   },
   methods: {
     onClick(event) {
-      this.$store.commit("setCurrentSubtitle", this.id)
+      this.$store.commit("setCurrentSubtitle", {
+        id: this.id
+      })
     }
-  },
-  mounted() {
-    console.log(this.id);
-    
   }
 }
 </script>

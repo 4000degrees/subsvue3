@@ -22,7 +22,7 @@
 
   <div class="grid-stack-item" data-grid-ref="solid-editor">
     <div class="grid-stack-item-content">
-      <SolidEditor />
+      <SolidEditor ref="SolidEditor" />
     </div>
   </div>
 
@@ -127,7 +127,8 @@ export default {
 
     CommandManager.init({
       player: this.$refs.player.$refs.playerElement,
-      state: this.$store.state
+      SolidEditor: this.$refs.SolidEditor,
+      store: this.$store
     })
 
     window["cm"] = CommandManager
