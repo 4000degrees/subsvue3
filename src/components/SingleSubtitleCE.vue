@@ -19,7 +19,8 @@ export default {
         return this.$store.getters.currentSubtitleText
       },
       set(text) {
-        this.$store.dispatch("updateCurrentSubtitleText", text)
+        this.$store.dispatch("updateCurrentSubtitleText", {text: text})
+
       }
     }
   },
@@ -33,6 +34,7 @@ export default {
   methods: {
     input() {
       this.text = this.$el.innerHTML
+      console.log(this.$el.innerHTML)
     }
   },
   mounted() {
